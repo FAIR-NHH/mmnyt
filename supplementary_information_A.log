@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  /home/sameos/Documents/gits/mmnyt/supplementary_information_A.log
   log type:  text
- opened on:  11 May 2020, 13:02:30
+ opened on:  11 May 2020, 13:41:37
 
 . 
 . /* 
@@ -18,9 +18,9 @@
 . tempfile coronastat
 
 . save `coronastat'
-file /tmp/St08156.000001 saved
+file /tmp/St11967.000001 saved
 
-. use data/processed/final_ipsos_cleaned.dta, clear
+. use data/processed/ipsos_mmnyt_processed_release, clear
 
 . merge m:1 state using `coronastat'
 
@@ -110,7 +110,7 @@ scalars:
                 r(Var) =  1.248976195432858
                  r(sd) =  1.117576035638228
            r(skewness) =  -.517267890422173
-           r(kurtosis) =  2.574560592286536
+           r(kurtosis) =  2.574560592286538
                 r(sum) =  29405.93803292505
                 r(min) =  1
                 r(max) =  5
@@ -155,7 +155,7 @@ scalars:
                r(mean) =  2.868431773921706
                 r(Var) =  1.424444343189724
                  r(sd) =  1.193500876912005
-           r(skewness) =  -.0373367939207468
+           r(skewness) =  -.0373367939207467
            r(kurtosis) =  2.030352251060175
                 r(sum) =  23050.24639962931
                 r(min) =  1
@@ -200,8 +200,8 @@ scalars:
                r(mean) =  3.565212042720057
                 r(Var) =  5.394885880631241
                  r(sd) =  2.322689363783121
-           r(skewness) =  .2848072472458315
-           r(kurtosis) =  2.920234987032759
+           r(skewness) =  .2848072472458314
+           r(kurtosis) =  2.920234987032756
                 r(sum) =  28649.45814599882
                 r(min) =  0
                 r(max) =  10
@@ -246,8 +246,8 @@ scalars:
                r(mean) =  4.039940188427707
                 r(Var) =  .7760973717213281
                  r(sd) =  .8809638878644959
-           r(skewness) =  -.8567095462010423
-           r(kurtosis) =  3.67276544741716
+           r(skewness) =  -.8567095462010427
+           r(kurtosis) =  3.672765447417161
                 r(sum) =  32464.29551842124
                 r(min) =  1
                 r(max) =  5
@@ -292,8 +292,8 @@ scalars:
                r(mean) =  7.061912978091506
                 r(Var) =  5.67985588568293
                  r(sd) =  2.383244822858728
-           r(skewness) =  -.6560285519746337
-           r(kurtosis) =  3.148515786195785
+           r(skewness) =  -.6560285519746361
+           r(kurtosis) =  3.148515786195783
                 r(sum) =  56748.37229096749
                 r(min) =  0
                 r(max) =  10
@@ -338,8 +338,8 @@ scalars:
                r(mean) =  2.69793468998817
                 r(Var) =  1.800174168875804
                  r(sd) =  1.341705693837439
-           r(skewness) =  .2083494317119767
-           r(kurtosis) =  1.857192804806354
+           r(skewness) =  .2083494317119766
+           r(kurtosis) =  1.857192804806353
                 r(sum) =  21680.1598489169
                 r(min) =  1
                 r(max) =  5
@@ -384,7 +384,7 @@ scalars:
                r(mean) =  2.362845904246193
                 r(Var) =  .6025273234795642
                  r(sd) =  .7762263352138757
-           r(skewness) =  -.7286358840747065
+           r(skewness) =  -.7286358840747073
            r(kurtosis) =  2.026137364766178
                 r(sum) =  18987.44142788745
                 r(min) =  1
@@ -430,7 +430,7 @@ scalars:
                r(mean) =  .6270627681621332
                 r(Var) =  .2338838705751888
                  r(sd) =  .4836154159817373
-           r(skewness) =  -.5255026725971073
+           r(skewness) =  -.5255026725971071
            r(kurtosis) =  1.276153058906696
                 r(sum) =  5038.973367112522
                 r(min) =  0
@@ -484,7 +484,7 @@ scalars:
                 r(Var) =  .004013992967383
                  r(sd) =  .0633560807451268
            r(skewness) =  3.073207679523767
-           r(kurtosis) =  11.25417663480748
+           r(kurtosis) =  11.25417663480747
                 r(sum) =  427.6706701542744
                 r(min) =  .0049627586267889
                 r(max) =  .2694108188152313

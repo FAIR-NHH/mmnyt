@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  /home/sameos/Documents/gits/mmnyt/supplementary_information_C.log
   log type:  text
- opened on:  11 May 2020, 13:32:10
+ opened on:  11 May 2020, 13:42:47
 
 . 
 . /* 
@@ -18,10 +18,10 @@
 . tempfile coronastat26
 
 . save `coronastat26'
-file /tmp/St10681.000001 saved
+file /tmp/St11967.000001 saved
 
 . 
-. use data/processed/final_ipsos_cleaned.dta, clear
+. use data/processed/ipsos_mmnyt_processed_release, clear
 
 . merge m:1 state using `coronastat26'
 
@@ -106,8 +106,8 @@ scalars:
                r(mean) =  3.659350339828534
                 r(Var) =  1.248976195432858
                  r(sd) =  1.117576035638228
-           r(skewness) =  -.517267890422173
-           r(kurtosis) =  2.574560592286538
+           r(skewness) =  -.5172678904221732
+           r(kurtosis) =  2.574560592286535
                 r(sum) =  29405.93803292505
                 r(min) =  1
                 r(max) =  5
@@ -152,7 +152,7 @@ scalars:
                r(mean) =  2.868431773921706
                 r(Var) =  1.424444343189724
                  r(sd) =  1.193500876912005
-           r(skewness) =  -.0373367939207467
+           r(skewness) =  -.0373367939207468
            r(kurtosis) =  2.030352251060175
                 r(sum) =  23050.24639962931
                 r(min) =  1
@@ -197,8 +197,8 @@ scalars:
                r(mean) =  3.565212042720057
                 r(Var) =  5.394885880631241
                  r(sd) =  2.322689363783121
-           r(skewness) =  .2848072472458314
-           r(kurtosis) =  2.920234987032756
+           r(skewness) =  .2848072472458318
+           r(kurtosis) =  2.920234987032761
                 r(sum) =  28649.45814599882
                 r(min) =  0
                 r(max) =  10
@@ -243,8 +243,8 @@ scalars:
                r(mean) =  4.039940188427707
                 r(Var) =  .7760973717213281
                  r(sd) =  .8809638878644959
-           r(skewness) =  -.8567095462010427
-           r(kurtosis) =  3.672765447417161
+           r(skewness) =  -.8567095462010429
+           r(kurtosis) =  3.672765447417162
                 r(sum) =  32464.29551842124
                 r(min) =  1
                 r(max) =  5
@@ -288,8 +288,8 @@ scalars:
                r(mean) =  2.938087021908494
                 r(Var) =  5.67985588568293
                  r(sd) =  2.383244822858728
-           r(skewness) =  .6560285519746358
-           r(kurtosis) =  3.148515786195783
+           r(skewness) =  .6560285519746343
+           r(kurtosis) =  3.148515786195782
                 r(sum) =  23609.98452682473
                 r(min) =  0
                 r(max) =  10
@@ -380,7 +380,7 @@ scalars:
                r(mean) =  2.362845904246193
                 r(Var) =  .6025273234795642
                  r(sd) =  .7762263352138757
-           r(skewness) =  -.7286358840747073
+           r(skewness) =  -.7286358840747075
            r(kurtosis) =  2.026137364766178
                 r(sum) =  18987.44142788745
                 r(min) =  1
@@ -426,8 +426,8 @@ scalars:
                r(mean) =  .6270627681621332
                 r(Var) =  .2338838705751888
                  r(sd) =  .4836154159817373
-           r(skewness) =  -.5255026725971071
-           r(kurtosis) =  1.276153058906696
+           r(skewness) =  -.5255026725971074
+           r(kurtosis) =  1.276153058906697
                 r(sum) =  5038.973367112522
                 r(min) =  0
                 r(max) =  1
@@ -503,8 +503,8 @@ scalars:
                r(mean) =  .0259084632794623
                 r(Var) =  .0020694979062797
                  r(sd) =  .0454917344830875
-           r(skewness) =  3.167026459749059
-           r(kurtosis) =  11.80898036725776
+           r(skewness) =  3.167026459749064
+           r(kurtosis) =  11.80898036725774
                 r(sum) =  295.8487421881802
                 r(min) =  .002901547588408
                 r(max) =  .1947047114372253
@@ -697,7 +697,6 @@ corona_prime |  -.0919267   .0383548    -2.40   0.017    -.1671134   -.0167401
 > label mtitle("Ineq avers" "Ineq avers" "Luck determines" "Luck determines" "In
 > dex of std" "Index of std") ///
 > b(3)
-(note: file tables/hyp1hyp2.tex not found)
 (output written to tables/hyp1hyp2.tex)
 
 . 
@@ -866,7 +865,6 @@ corona_prime |   .0134486   .0372929     0.36   0.718    -.0596565    .0865537
 > label mtitle("Redistribution" "Redistribution" "Healthcare" "Healthcare" "Inde
 > x of std" "Index of std") ///
 > b(3)
-(note: file tables/hyp3.tex not found)
 (output written to tables/hyp3.tex)
 
 . 
@@ -1034,7 +1032,6 @@ corona_prime |   .1051631   .0367871     2.86   0.004     .0330496    .1772766
 > label mtitle("Solidarity" "Solidarity" "Compassion" "Compassion" "Index of std
 > " "Index of std") ///
 > b(3)
-(note: file tables/hyp4.tex not found)
 (output written to tables/hyp4.tex)
 
 . 
@@ -1202,7 +1199,6 @@ corona_prime |  -.0242884   .0367854    -0.66   0.509    -.0963985    .0478217
 > label mtitle("Glob over nat." "Glob over nat." "No borders" "No borders" "Inde
 > x of std" "Index of std") ///
 > b(3)
-(note: file tables/hyp5.tex not found)
 (output written to tables/hyp5.tex)
 
 . 
@@ -1495,7 +1491,6 @@ added scalar:
 > label mtitle("Luck unfair" "Luck unfair" "Luck unfair" "Luck unfair" "Luck unf
 > air") ///
 > b(3)
-(note: file tables/het_unfairluck.tex not found)
 (output written to tables/het_unfairluck.tex)
 
 . 
@@ -1788,7 +1783,6 @@ added scalar:
 > label mtitle("Luck determines" "Luck determines" "Luck determines" "Luck deter
 > mines" "Luck determines") ///
 > b(3)
-(note: file tables/het_luck_determ.tex not found)
 (output written to tables/het_luck_determ.tex)
 
 . 
@@ -2081,7 +2075,6 @@ added scalar:
 > _cons) ///
 > label mtitle("Redistr" "Redistr" "Redistr" "Redistr" "Redistr") ///
 > b(3)
-(note: file tables/het_gov_reduce_inequality.tex not found)
 (output written to tables/het_gov_reduce_inequality.tex)
 
 . 
@@ -2374,7 +2367,6 @@ added scalar:
 > label mtitle("Health care" "Health care" "Health care" "Health care" "Health c
 > are") ///
 > b(3)
-(note: file tables/het_healthcare.tex not found)
 (output written to tables/het_healthcare.tex)
 
 . 
@@ -2667,7 +2659,6 @@ added scalar:
 > label mtitle("Society over self" "Society over self" "Society over self" "Soci
 > ety over self" "Society over self") ///
 > b(3)
-(note: file tables/heterogeneitysol.tex not found)
 (output written to tables/heterogeneitysol.tex)
 
 . 
@@ -2960,7 +2951,6 @@ added scalar:
 > label mtitle("Compassion" "Compassion" "Compassion" "Compassion" "Compassion")
 >  ///
 > b(3)
-(note: file tables/het_compassion.tex not found)
 (output written to tables/het_compassion.tex)
 
 . 
@@ -3253,7 +3243,6 @@ added scalar:
 > _cons) ///
 > label mtitle("Global" "Global" "Global" "Global" "Global") ///
 > b(3)
-(note: file tables/heterogeneity_prior_global.tex not found)
 (output written to tables/heterogeneity_prior_global.tex)
 
 . 
@@ -3546,9 +3535,9 @@ added scalar:
 > label mtitle("No borders" "No borders" "No borders" "No borders" "No borders")
 >  ///
 > b(3)
-(note: file tables/het_noborders.tex not found)
 (output written to tables/het_noborders.tex)
 
 . 
 end of do-file
 
+. exit, clear

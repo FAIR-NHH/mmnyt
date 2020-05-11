@@ -14,7 +14,7 @@ insheet using data/corona_status_March-26.csv, clear
 tempfile coronastat26
 save `coronastat26'
 
-use data/processed/final_ipsos_cleaned.dta, clear
+use data/processed/ipsos_mmnyt_processed_release, clear
 merge m:1 state using `coronastat26'
 
 est clear
