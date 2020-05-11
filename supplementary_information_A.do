@@ -636,4 +636,4 @@ b(3)
 gen znational=zprior_national_over_global
 gen cp=corona_prime
 
-*rwolf zluck_unfair_agree zluck_determ_agree zprior_soc_over_self zcompassion_agree znational znoborders_agree [pw=Weightvar], indepvar(cp) method(regress) controls(retirement_age female highinc republican higheduc child alone urban high_confirmed northeast midwest south) reps(9999)
+rwolf zluck_unfair_agree zluck_determ_agree zprior_soc_over_self zcompassion_agree znational znoborders_agree [pw=Weightvar], indepvar(cp) method(regress) controls(retirement_age female highinc republican higheduc child alone urban high_confirmed northeast midwest south) reps(9999)
