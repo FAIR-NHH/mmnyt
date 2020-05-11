@@ -1,0 +1,56 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{4}{c}}
+\toprule
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}\\
+                    &\multicolumn{1}{c}{Redistr. (std.)}&\multicolumn{1}{c}{Redistr (std.)}&\multicolumn{1}{c}{Healthcare (std.)}&\multicolumn{1}{c}{Healthcare (std.)}\\
+\midrule
+Covid-19            &       0.005         &       0.014         &      -0.017         &      -0.001         \\
+                    &     (0.024)         &     (0.023)         &     (0.024)         &     (0.022)         \\
+\addlinespace
+Republican          &                     &      -0.939\sym{***}&                     &      -1.016\sym{***}\\
+                    &                     &     (0.025)         &                     &     (0.024)         \\
+\addlinespace
+High inc.           &                     &      -0.104\sym{***}&                     &      -0.069\sym{***}\\
+                    &                     &     (0.025)         &                     &     (0.024)         \\
+\addlinespace
+High educ.          &                     &      -0.041         &                     &       0.032         \\
+                    &                     &     (0.025)         &                     &     (0.023)         \\
+\addlinespace
+Female              &                     &      -0.006         &                     &       0.008         \\
+                    &                     &     (0.023)         &                     &     (0.022)         \\
+\addlinespace
+Retirement age      &                     &      -0.214\sym{***}&                     &      -0.188\sym{***}\\
+                    &                     &     (0.031)         &                     &     (0.027)         \\
+\addlinespace
+High confirmed      &                     &      -0.047\sym{*}  &                     &       0.040         \\
+                    &                     &     (0.026)         &                     &     (0.025)         \\
+\addlinespace
+Child               &                     &       0.109\sym{***}&                     &       0.057\sym{**} \\
+                    &                     &     (0.029)         &                     &     (0.028)         \\
+\addlinespace
+Living alone        &                     &       0.004         &                     &      -0.038         \\
+                    &                     &     (0.029)         &                     &     (0.029)         \\
+\addlinespace
+Urban               &                     &       0.071\sym{***}&                     &       0.123\sym{***}\\
+                    &                     &     (0.027)         &                     &     (0.026)         \\
+\addlinespace
+Northeast           &                     &       0.104\sym{***}&                     &       0.050         \\
+                    &                     &     (0.039)         &                     &     (0.038)         \\
+\addlinespace
+Midwest             &                     &      -0.022         &                     &      -0.030         \\
+                    &                     &     (0.035)         &                     &     (0.034)         \\
+\addlinespace
+South               &                     &      -0.032         &                     &      -0.039         \\
+                    &                     &     (0.031)         &                     &     (0.030)         \\
+\addlinespace
+Constant            &      -0.002         &       0.396\sym{***}&       0.009         &       0.321\sym{***}\\
+                    &     (0.017)         &     (0.041)         &     (0.017)         &     (0.041)         \\
+\midrule
+Observations        &    8116.000         &    7239.000         &    8116.000         &    7239.000         \\
+\(R^{2}\)           &       0.000         &       0.232         &       0.000         &       0.272         \\
+\bottomrule
+\multicolumn{5}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{5}{l}{\footnotesize \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)}\\
+\end{tabular}
+}

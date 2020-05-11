@@ -1,0 +1,832 @@
+---
+title: "Making graphics for the paper and supplementary information"
+author: "Erik Ø. Sørensen"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(haven)
+library(fastDummies)
+library(reldist)
+library(patchwork)
+library(sjlabelled)
+library(stargazer)
+library(sandwich)
+library(showtext)
+source("functions.R")
+Sys.setlocale("LC_TIME", "en_US.UTF-8")
+showtext_auto()
+
+```
+
+
+# Reading data
+Reading data from Ipsos:
+```{r message=FALSE, warning=FALSE}
+wavedate_df <- tribble(~Wavemarker, ~wavedt,
+                       4, "2020-3-18",  # Not to be used - No COVID-19 reminder
+                       5, "2020-3-24",
+                       6, "2020-3-25", 
+                       7, "2020-3-26",
+                       8, "2020-3-27",
+                       9, "2020-3-30",
+                       10,"2020-3-31",
+                       11,"2020-4-1", 
+                       12,"2020-4-2") %>% 
+  mutate(wavedt = as.Date(wavedt))
+
+ipsos <- haven::read_dta(here::here("data","processed", "final_ipsos_cleaned.dta")) %>%
+ mutate( year=2020,
+         country="United States",
+         state = as.character(haven::as_factor(State_Recoded)),
+         inequality_luck = ifelse(luck_d, inequality, NA),
+         solidarity = 10 - prior_self_over_soc,
+         zsolidarity = weighted.scale(solidarity, Weightvar, na.rm=TRUE),
+         nationalism = prior_national_over_global,
+         znationalism = weighted.scale(prior_national_over_global, Weightvar, na.rm = TRUE),
+         zluck_unfair = weighted.scale(luck_unfair_agree, Weightvar, na.rm = TRUE),
+         redistribution = gov_reduce_inequality_agree,
+         zredistribution = weighted.scale(redistribution, Weightvar, na.rm = TRUE),
+         politics = as.character(haven::as_factor(GDW6)),
+         republican = as.numeric(ifelse(politics!="Prefer not to answer", 
+                                         politics=="Republican",
+                                         NA)),
+         female = as.numeric(resp_gender==2),
+         ) %>% left_join(wavedate_df) %>%
+  filter(!is.na(wavedt)) %>% 
+  filter(!is.na(corona_prime))
+```
+
+Merging in the confirmed cases by state.
+```{r}
+confirmed <- read.csv(here::here("data","corona_status_March-28.csv")) %>%
+  mutate(confirmed_cases = confirmed/pop2019 * 100000000) %>%
+  select(state, confirmed_cases)
+ipsos <- ipsos %>% left_join(confirmed, by="state")
+```
+
+I create a new variable splitting the states by whether they have above or below 
+(population-weighted) median exposure to the virus by the in-state number of
+confirmed cases.
+```{r}
+ipsos <- ipsos %>% mutate( high_confirmed = 
+                             as.numeric(confirmed_cases > wtd.quantile(confirmed_cases,
+                                                                       0.5, 
+                                                                       weight = Weightvar)))
+wtd.quantile(ipsos$confirmed_cases, 0.5, weight=ipsos$Weightvar
+             )
+```
+
+
+# Descriptive statistics:
+
+## Unconditional, numerical summary
+```{r}
+ipsos %>% summarize( mean_solidarity = weighted.mean(solidarity, Weightvar, na.rm=TRUE),
+                  se_solidarity = weighted.se(solidarity, Weightvar, na.rm=TRUE),
+                  sd_solidarity = weighted.sd(solidarity, Weightvar, na.rm=TRUE),
+                  mean_nationalism = weighted.mean(nationalism, Weightvar, na.rm=TRUE),
+                  se_nationalism = weighted.se(nationalism, Weightvar, na.rm=TRUE),
+                  sd_nationalism = weighted.sd(nationalism, Weightvar, na.rm=TRUE),
+                  mean_luckunfair = weighted.mean(luck_unfair_agree, Weightvar, na.rm=TRUE),
+                  se_luckunfair = weighted.se(luck_unfair_agree, Weightvar, na.rm=TRUE),
+                  sd_luckunfair = weighted.sd(luck_unfair_agree, Weightvar, na.rm=TRUE),
+                  mean_redistribution = weighted.mean(redistribution, Weightvar, na.rm=TRUE),
+                  se_redistribution = weighted.se(redistribution, Weightvar, na.rm=TRUE),
+                  sd_redistribution = weighted.sd(redistribution, Weightvar, na.rm=TRUE),
+                  mean_universalhealthcare = weighted.mean(fed_univ_healthcare, Weightvar, na.rm=TRUE),
+                  se_universalhealthcare = weighted.se(fed_univ_healthcare, Weightvar, na.rm=TRUE),
+                  sd_universalhealthcare = weighted.sd(fed_univ_healthcare, Weightvar, na.rm=TRUE)
+) %>% pivot_longer(mean_solidarity:sd_universalhealthcare, values_to = 'estimate') %>% 
+  separate("name",sep = "_", into=c("statistic","outcome")) %>%
+  pivot_wider(id_cols="outcome",names_from="statistic",values_from="estimate") %>%
+  mutate(outcome = factor(outcome, levels = c("solidarity","nationalism","luckunfair",
+                                              "redistribution", "universalhealthcare"))) %>%
+  arrange(outcome) %>% knitr::kable(digits=3)
+```
+
+## Broken down by treatment and control:
+
+```{r}
+ipsos %>% filter(!is.na(corona_prime)) %>% 
+  group_by(corona_prime) %>% 
+  summarize( mean_solidarity = weighted.mean(solidarity, Weightvar, na.rm=TRUE),
+             se_solidarity = weighted.se(solidarity, Weightvar, na.rm=TRUE),
+             sd_solidarity = weighted.sd(solidarity, Weightvar, na.rm=TRUE),
+             mean_nationalism = weighted.mean(nationalism, Weightvar, na.rm=TRUE),
+             se_nationalism = weighted.se(nationalism, Weightvar, na.rm=TRUE),
+             sd_nationalism = weighted.sd(nationalism, Weightvar, na.rm=TRUE),
+             mean_luckunfair = weighted.mean(luck_unfair_agree, Weightvar, na.rm=TRUE),
+             se_luckunfair = weighted.se(luck_unfair_agree, Weightvar, na.rm=TRUE),
+             sd_luckunfair = weighted.sd(luck_unfair_agree, Weightvar, na.rm=TRUE),
+             mean_redistribution = weighted.mean(redistribution, Weightvar, na.rm=TRUE),
+             se_redistribution = weighted.se(redistribution, Weightvar, na.rm=TRUE),
+             sd_redistribution = weighted.sd(redistribution, Weightvar, na.rm=TRUE),
+             mean_universalhealthcare = weighted.mean(fed_univ_healthcare, Weightvar, na.rm=TRUE),
+             se_universalhealthcare = weighted.se(fed_univ_healthcare, Weightvar, na.rm=TRUE),
+             sd_universalhealthcare = weighted.sd(fed_univ_healthcare, Weightvar, na.rm=TRUE)
+  ) %>% pivot_longer(mean_solidarity:sd_universalhealthcare, values_to = 'estimate') %>% 
+  separate("name",sep = "_", into=c("statistic","outcome")) %>%
+  pivot_wider(id_cols=c("corona_prime", "outcome"), names_from="statistic", values_from="estimate") %>%
+  mutate(outcome = factor(outcome, levels = c("solidarity","nationalism","luckunfair",
+                                              "redistribution", "universalhealthcare"))) %>%
+  arrange(corona_prime, outcome) %>% knitr::kable(digits=3)
+```
+
+## Key histograms
+
+```{r}
+solidarity_hist_df <- ipsos %>% 
+  summarise(weighted.bars(solidarity, Weightvar, values=0:10, na.rm=TRUE))
+solidarity_hist_df %>% knitr::kable(digits=3)
+solidarity_hist <- solidarity_hist_df  %>%
+  ggplot(aes(x=v, y=proportion)) + 
+  geom_bar(stat='identity') +
+  theme_minimal() +
+  scale_x_continuous(breaks=0:10) +
+  labs(x=element_blank(),
+       y="Proportion",
+       title="Solidarity")
+```
+
+```{r}
+nationalism_hist_df <- ipsos %>% 
+  summarise(weighted.bars(nationalism, Weightvar, values=0:10, na.rm=TRUE))
+nationalism_hist_df %>% knitr::kable(digits=3)
+nationalism_hist <- nationalism_hist_df %>%
+  ggplot(aes(x=v, y=proportion)) + 
+  geom_bar(stat='identity') +
+  theme_minimal() +
+  scale_x_continuous(breaks=0:10) +
+  labs(x=element_blank(),
+       y="Proportion",
+       title="Nationalism")
+```
+
+```{r}
+luckunfair_hist_df <- ipsos %>% 
+  summarise(weighted.bars(luck_unfair_agree, Weightvar, na.rm=TRUE))
+luckunfair_hist_df %>% knitr::kable(digits=3)
+luckunfair_hist <- luckunfair_hist_df %>% 
+  ggplot(aes(x=v, y=proportion)) + 
+  geom_bar(stat='identity') +
+  theme_minimal() +
+  labs(x=element_blank(),
+       y="Proportion",
+       title="Luck unfair")
+```
+
+```{r}
+redistribution_hist_df <- ipsos %>% 
+  summarise(weighted.bars(redistribution, Weightvar, na.rm=TRUE))
+redistribution_hist_df %>% knitr::kable(digits=3)
+redistribution_hist <- redistribution_hist_df %>%
+  ggplot(aes(x=v, y=proportion)) + 
+  geom_bar(stat='identity') +
+  theme_minimal() +
+  labs(x=element_blank(),
+       y="Proportion",
+       title="Redistribution")
+```
+
+Putting the graphs together
+```{r}
+outcomes_hist <- solidarity_hist + nationalism_hist + luckunfair_hist + 
+  redistribution_hist + plot_annotation(tag_levels = 'a')
+outcomes_hist
+ggsave(here::here("graphs","outcomes_hist.pdf"), width=16, height=10, units="cm")
+```
+
+## Proportions split by treatment
+
+For **solidarity**:
+```{r}
+ipsos %>% group_by(corona_prime) %>%
+  summarise(weighted.bars(solidarity, Weightvar, values=0:10, na.rm=TRUE)) %>%
+  pivot_wider(id_cols=v, names_from = corona_prime, values_from = proportion) %>%
+  arrange(v) %>% knitr::kable(digits=3)
+```
+
+
+For **nationalism**:
+```{r}
+ipsos %>% group_by(corona_prime) %>%
+  summarise(weighted.bars(nationalism, Weightvar, na.rm=TRUE)) %>%
+  pivot_wider(id_cols=v, names_from = corona_prime, values_from = proportion) %>%
+  arrange(v) %>% knitr::kable(digits=3)
+```
+
+For **luck unfair**:
+```{r}
+ipsos %>% group_by(corona_prime) %>%
+  summarise(weighted.bars(luck_unfair_agree, Weightvar, na.rm=TRUE)) %>%
+  pivot_wider(id_cols=v, names_from = corona_prime, values_from = proportion) %>%
+  arrange(v) %>% knitr::kable(digits=3)
+```
+
+
+For **redistribution**:
+```{r}
+ipsos %>% group_by(corona_prime) %>%
+  summarise(weighted.bars(redistribution, Weightvar, na.rm=TRUE)) %>%
+  pivot_wider(id_cols=v, names_from = corona_prime, values_from = proportion) %>%
+  arrange(v) %>% knitr::kable(digits=3)
+```
+
+
+# Collecting estimates on moral landscape
+I want to collect estimates in a dataset which is clear about
+
+- outcome (solidarity, unfair_luck, nationalism). String.
+- treatment_grouped (which group are we looking at hetereogeneity with respect to). String.
+- within_group_type (male/female ; low/high ; ...) String.
+- estimate (numerical) 
+- Standard error (numerical)
+
+I can use `treatment_grouped` to put color on the bars,
+and within `within_group_type` to add annotations. 
+
+## Main treatment effects
+```{r}
+s_m <- ipsos %>% lm(zsolidarity ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+l_m <- ipsos %>% lm(zluck_unfair ~ corona_prime + retirement_age + female + highinc + 
+                    republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+n_m <- ipsos %>% lm(znationalism ~ corona_prime + retirement_age + female + 
+                                highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+m_df <- tibble(outcome = c("solidarity","luck_unfair","nationalism"),
+               treatment_grouped = c("Average","Average", "Average"),
+               within_group_typed = c("","",""),
+               estimate = c( coef(s_m)[['corona_prime']], coef(l_m)[['corona_prime']],
+                             coef(n_m)[['corona_prime']]),
+               se = c( sqrt(diag(vcovHC(s_m, type = "HC1")))[['corona_prime']],
+                       sqrt(diag(vcovHC(l_m, type = "HC1")))[['corona_prime']],
+                       sqrt(diag(vcovHC(n_m, type = "HC1")))[['corona_prime']]))
+m_df
+```
+
+
+
+## Heterogeneity by retirement age
+```{r}
+ipsos <- ipsos %>% mutate(ret_prime = corona_prime * retirement_age,
+                          nret_prime = corona_prime * (1-retirement_age))
+s_ret <- ipsos %>% lm(zsolidarity ~ ret_prime + nret_prime + 
+                      retirement_age  + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+l_ret <- ipsos %>% lm(zluck_unfair ~ ret_prime + nret_prime + 
+                      retirement_age  + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+n_ret <- ipsos %>% lm(znationalism ~ ret_prime + nret_prime + 
+                      retirement_age  + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+ret_df <- tibble(outcome = c("solidarity", "solidarity", "luck_unfair", "luck_unfair",
+                             "nationalism", "nationalism"),
+                 treatment_grouped = "Retirement age",
+                 within_group_typed = c("below","reached", "below","reached", "below","reached"),
+                 estimate = c(coef(s_ret)[['nret_prime']],
+                              coef(s_ret)[['ret_prime']],
+                              coef(l_ret)[['nret_prime']],
+                              coef(l_ret)[['ret_prime']],
+                              coef(n_ret)[['nret_prime']],
+                              coef(n_ret)[['ret_prime']]),
+                 se = c(sqrt(diag(vcovHC(s_ret, type = "HC1")))[['nret_prime']],
+                        sqrt(diag(vcovHC(s_ret, type = "HC1")))[['ret_prime']],
+                        sqrt(diag(vcovHC(l_ret, type = "HC1")))[['nret_prime']],
+                        sqrt(diag(vcovHC(l_ret, type = "HC1")))[['ret_prime']],
+                        sqrt(diag(vcovHC(n_ret, type = "HC1")))[['nret_prime']],
+                        sqrt(diag(vcovHC(n_ret, type = "HC1")))[['ret_prime']]))
+ret_df
+```
+
+## Heterogeneity by gender
+```{r}
+ipsos <- ipsos %>% mutate(female_prime = corona_prime * female,
+                          nfemale_prime = corona_prime * (1-female))
+s_sex <- ipsos %>% lm(zsolidarity ~ female_prime + nfemale_prime + 
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+l_sex <- ipsos %>% lm(zluck_unfair ~ female_prime + nfemale_prime +
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+n_sex <- ipsos %>% lm(znationalism ~ female_prime + nfemale_prime +
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+sex_df <- tibble(outcome = c("solidarity", "solidarity", "luck_unfair", "luck_unfair",
+                             "nationalism", "nationalism"),
+                 treatment_grouped = "Gender",
+                 within_group_typed = c("male","female", "male","female", "male","female"),
+                 estimate = c(coef(s_sex)[['nfemale_prime']],
+                              coef(s_sex)[['female_prime']],
+                              coef(l_sex)[['nfemale_prime']],
+                              coef(l_sex)[['female_prime']],
+                              coef(n_sex)[['nfemale_prime']],
+                              coef(n_sex)[['female_prime']]),
+                 se = c(sqrt(diag(vcovHC(s_sex, type = "HC1")))[['nfemale_prime']],
+                        sqrt(diag(vcovHC(s_sex, type = "HC1")))[['female_prime']],
+                        sqrt(diag(vcovHC(l_sex, type = "HC1")))[['nfemale_prime']],
+                        sqrt(diag(vcovHC(l_sex, type = "HC1")))[['female_prime']],
+                        sqrt(diag(vcovHC(n_sex, type = "HC1")))[['nfemale_prime']],
+                        sqrt(diag(vcovHC(n_sex, type = "HC1")))[['female_prime']]))
+sex_df
+```
+
+# Heterogeneity by Income
+```{r}
+ipsos <- ipsos %>% mutate(hinc_prime = corona_prime * highinc,
+                          linc_prime = corona_prime * (1-highinc))
+s_inc <- ipsos %>% lm(zsolidarity ~ hinc_prime + linc_prime + 
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+l_inc <- ipsos %>% lm(zluck_unfair ~ hinc_prime + linc_prime + 
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+n_inc <- ipsos %>% lm(znationalism ~ hinc_prime + linc_prime + 
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+inc_df <- tibble(outcome = c("solidarity", "solidarity", "luck_unfair", "luck_unfair",
+                             "nationalism", "nationalism"),
+                 treatment_grouped = "Income",
+                 within_group_typed = c("low","high", "low","high", "low","high"),
+                 estimate = c(coef(s_inc)[['linc_prime']],
+                              coef(s_inc)[['hinc_prime']],
+                              coef(l_inc)[['linc_prime']],
+                              coef(l_inc)[['hinc_prime']],
+                              coef(n_inc)[['linc_prime']],
+                              coef(n_inc)[['hinc_prime']]),
+                 se = c(sqrt(diag(vcovHC(s_inc, type = "HC1")))[['linc_prime']],
+                        sqrt(diag(vcovHC(s_inc, type = "HC1")))[['hinc_prime']],
+                        sqrt(diag(vcovHC(l_inc, type = "HC1")))[['linc_prime']],
+                        sqrt(diag(vcovHC(l_inc, type = "HC1")))[['hinc_prime']],
+                        sqrt(diag(vcovHC(n_inc, type = "HC1")))[['linc_prime']],
+                        sqrt(diag(vcovHC(n_inc, type = "HC1")))[['hinc_prime']]))
+inc_df
+```
+
+# Heterogeneity by Education
+```{r}
+ipsos <- ipsos %>% mutate(hedu_prime = corona_prime * higheduc,
+                          ledu_prime = corona_prime * (1-higheduc))
+s_edu <- ipsos %>% lm(zsolidarity ~ ledu_prime + hedu_prime + 
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+l_edu <- ipsos %>% lm(zluck_unfair ~ ledu_prime + hedu_prime + 
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+n_edu <- ipsos %>% lm(znationalism ~  ledu_prime + hedu_prime + 
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+edu_df <- tibble(outcome = c("solidarity", "solidarity", "luck_unfair", "luck_unfair",
+                             "nationalism", "nationalism"),
+                 treatment_grouped = "Education",
+                 within_group_typed = c("low","high", "low","high", "low","high"),
+                 estimate = c(coef(s_edu)[['ledu_prime']],
+                              coef(s_edu)[['hedu_prime']],
+                              coef(l_edu)[['ledu_prime']],
+                              coef(l_edu)[['hedu_prime']],
+                              coef(n_edu)[['ledu_prime']],
+                              coef(n_edu)[['hedu_prime']]),
+                 se = c(sqrt(diag(vcovHC(s_edu, type = "HC1")))[['ledu_prime']],
+                        sqrt(diag(vcovHC(s_edu, type = "HC1")))[['hedu_prime']],
+                        sqrt(diag(vcovHC(l_edu, type = "HC1")))[['ledu_prime']],
+                        sqrt(diag(vcovHC(l_edu, type = "HC1")))[['hedu_prime']],
+                        sqrt(diag(vcovHC(n_edu, type = "HC1")))[['ledu_prime']],
+                        sqrt(diag(vcovHC(n_edu, type = "HC1")))[['hedu_prime']]))
+edu_df
+```
+
+# Heterogeneity by politics
+```{r}
+ipsos <- ipsos %>% mutate(rep_prime = corona_prime * republican,
+                          nrep_prime = corona_prime * (1-republican))
+s_pol <- ipsos %>% lm(zsolidarity ~ rep_prime + nrep_prime + 
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+l_pol <- ipsos %>% lm(zluck_unfair ~ rep_prime + nrep_prime + 
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+n_pol <- ipsos %>% lm(znationalism ~  rep_prime + nrep_prime + 
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+pol_df <- tibble(outcome = c("solidarity", "solidarity", "luck_unfair", "luck_unfair",
+                             "nationalism", "nationalism"),
+                 treatment_grouped = "Political",
+                 within_group_typed = c("Republican","Non-Republican", "Republican","Non-Republican",
+                                        "Republican","Non-Republican"),
+                 estimate = c(coef(s_pol)[['rep_prime']],
+                              coef(s_pol)[['nrep_prime']],
+                              coef(l_pol)[['rep_prime']],
+                              coef(l_pol)[['nrep_prime']],
+                              coef(n_pol)[['rep_prime']],
+                              coef(n_pol)[['nrep_prime']]),
+                 se = c(sqrt(diag(vcovHC(s_pol, type = "HC1")))[['rep_prime']],
+                        sqrt(diag(vcovHC(s_pol, type = "HC1")))[['nrep_prime']],
+                        sqrt(diag(vcovHC(l_pol, type = "HC1")))[['rep_prime']],
+                        sqrt(diag(vcovHC(l_pol, type = "HC1")))[['nrep_prime']],
+                        sqrt(diag(vcovHC(n_pol, type = "HC1")))[['rep_prime']],
+                        sqrt(diag(vcovHC(n_pol, type = "HC1")))[['nrep_prime']]))
+pol_df
+```
+
+## Heterogeneity by number of confirmed cases
+I do this by two groups, since we want to think about there being different 
+treatment effects in the two groups. 
+
+```{r}
+ipsos <- ipsos %>% mutate(hconf_prime = corona_prime * high_confirmed,
+                          lconf_prime = corona_prime * (1-high_confirmed))
+s_con <- ipsos %>% lm(zsolidarity ~ lconf_prime + hconf_prime  +
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+l_con <- ipsos %>% lm(zluck_unfair ~ lconf_prime + hconf_prime + 
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+n_con <- ipsos %>% lm(znationalism ~  lconf_prime + hconf_prime + 
+                      retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+con_df <- tibble(outcome = c("solidarity", "solidarity", "luck_unfair", "luck_unfair",
+                             "nationalism", "nationalism"),
+                 treatment_grouped = "Confirmed cases",
+                 within_group_typed = c("low","high", "low","high","low","high"),
+                 estimate = c(coef(s_con)[['lconf_prime']],
+                              coef(s_con)[['hconf_prime']],
+                              coef(l_con)[['lconf_prime']],
+                              coef(l_con)[['hconf_prime']],
+                              coef(n_con)[['lconf_prime']],
+                              coef(n_con)[['hconf_prime']]),
+                 se = c(sqrt(diag(vcovHC(s_con, type = "HC1")))[['lconf_prime']],
+                        sqrt(diag(vcovHC(s_con, type = "HC1")))[['hconf_prime']],
+                        sqrt(diag(vcovHC(l_con, type = "HC1")))[['lconf_prime']],
+                        sqrt(diag(vcovHC(l_con, type = "HC1")))[['hconf_prime']],
+                        sqrt(diag(vcovHC(n_con, type = "HC1")))[['lconf_prime']],
+                        sqrt(diag(vcovHC(n_con, type = "HC1")))[['hconf_prime']]))
+con_df
+```
+## Putting all the estimates together
+```{r}
+dfs <- list(m_df, ret_df, sex_df, inc_df, edu_df, pol_df, con_df)
+all_estimates <- reduce(dfs, bind_rows)
+with(all_estimates, table(treatment_grouped))
+all_estimates_levels <- c("Average", "Political", "Income","Education", "Gender","Retirement age","Confirmed cases") 
+all_estimates <- all_estimates %>% mutate(treatment_grouped = factor(treatment_grouped, levels=all_estimates_levels))
+all_estimates
+```
+## Graph of treatment effects
+
+Solidarity
+```{r}
+gdf <- all_estimates %>% filter(outcome=="solidarity")
+gsol <- gdf %>% ggplot(aes(x=as.factor( treatment_grouped), 
+             y=estimate, fill=treatment_grouped, group=within_group_typed)) +
+  geom_bar(stat='identity',position=position_dodge2(width=0.7), width=0.7) +
+  geom_errorbar(aes(ymin=estimate-se, ymax=estimate+se), 
+                position=position_dodge(width=0.7), 
+                width=0.1, alpha=0.4) +
+  theme_minimal() +
+  scale_x_discrete(labels=element_blank(), 
+                   limits = rev(all_estimates_levels)) +
+  scale_y_continuous(limits=c(-0.05,0.22)) +
+  labs(y = "Treatment effect \u00B1 s.e.", x=element_blank(),
+       title ="Solidarity", fill="Treatment by:") + 
+  geom_text(position = position_dodge(width=0.75),  size=3,
+            aes( y=-0.005, label=within_group_typed, hjust=1), angle=0) + coord_flip()
+gsol
+```
+
+Luck unfair
+```{r}
+glunfair <- all_estimates %>% filter(outcome=="luck_unfair") %>%
+  ggplot(aes(x=treatment_grouped, 
+             y=estimate, fill=treatment_grouped, group=within_group_typed)) +
+  geom_bar(stat='identity',position=position_dodge2(width=0.7), width=0.7) +
+  geom_errorbar(aes(ymin=estimate-se, ymax=estimate+se), 
+                position=position_dodge(width=0.7), 
+                width=0.1, alpha=0.4) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  scale_x_discrete(labels=element_blank(), 
+                   limits = rev(all_estimates_levels)) +
+  scale_y_continuous(limits=c(-0.20,0.05)) +
+  labs(y = "Treatment effect \u00B1 s.e.", x=element_blank(),
+       title ="Fairness", fill="Treatment by:") + 
+  geom_text(position = position_dodge(width=0.75), size=3,
+            aes( y=0.005, label=within_group_typed, hjust=0), angle=0) + coord_flip()
+glunfair
+```
+
+Nationalism
+```{r}
+gnat <- all_estimates %>% filter(outcome=="nationalism") %>%
+  ggplot(aes(x=treatment_grouped, 
+             y=estimate, fill=treatment_grouped, group=within_group_typed)) +
+  geom_bar(stat='identity',position=position_dodge2(width=0.7), width=0.7) +
+  geom_errorbar(aes(ymin=estimate-se, ymax=estimate+se), 
+                position=position_dodge(width=0.7), 
+                width=0.1, alpha=0.4) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  scale_x_discrete(labels=element_blank(), 
+                   limits = rev(all_estimates_levels)) +  
+  scale_y_continuous(limits=c(-0.13,0.12)) +
+  labs(y = "Treatment effect \u00B1 s.e.", x=element_blank(),
+       title ="Nationalism", fill="Treatment by:") + 
+  geom_text(position = position_dodge(width=0.75), size=3,
+            aes( y=0.06, label=within_group_typed, hjust=0), angle=0) + coord_flip()
+gnat
+```
+
+Putting them all together. This looks bad in the knitr-pdf, but ok with the larger graph
+saved to disk.
+```{r}
+tgraphs <- gsol + gnat + glunfair +  plot_layout(ncol=1, guides = 'collect') +
+  plot_annotation(tag_levels = 'a')
+tgraphs
+ggsave(here::here("graphs","treatment_effects.pdf"), width=16, height=20, units="cm")
+```
+
+# Treatment effects on policy preferences
+
+I aim for the same file structure as for the moral landscape variables. 
+
+## The main treatment effects 
+
+```{r}
+r_m <- ipsos %>% lm(zredistribution ~ corona_prime + retirement_age + female + highinc + 
+                      republican + higheduc + child + alone + urban + high_confirmed +
+                      northeast + midwest + south, data=., weights=Weightvar)
+h_m <- ipsos %>% lm(fed_univ_healthcare ~ corona_prime + retirement_age + female + highinc + 
+                      republican + higheduc + child + alone + urban + high_confirmed +
+                      northeast + midwest + south, data=., weights=Weightvar)
+mp_df <- tibble(outcome = c("redistribution","healthcare"),
+                treatment_grouped = c("Average","Average"),
+                within_group_typed = c("",""),
+                estimate = c( coef(r_m)[['corona_prime']],
+                              coef(h_m)[['corona_prime']]),
+                se = c( sqrt(diag(vcov(r_m)))[['corona_prime']],
+                        sqrt(diag(vcov(h_m)))[['corona_prime']]))
+mp_df
+```
+
+
+
+
+## Heterogeneity by politics
+```{r}
+r_pol <- ipsos %>% lm(zredistribution ~  rep_prime + nrep_prime + 
+                        retirement_age + female + highinc + 
+                        republican + higheduc + child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+h_pol <- ipsos %>% lm(fed_univ_healthcare ~  rep_prime + nrep_prime + 
+                        retirement_age + female + highinc + 
+                        republican + higheduc + child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+
+polp_df <- tibble(outcome = c("redistribution", "redistribution", "healthcare", "healthcare"),
+                 treatment_grouped = "Political",
+                 within_group_typed = c("Republican","Non-Republican", "Republican","Non-Republican"),
+                 estimate = c(coef(r_pol)[['rep_prime']],
+                              coef(r_pol)[['nrep_prime']],
+                              coef(h_pol)[['rep_prime']],
+                              coef(h_pol)[['nrep_prime']]),
+                 se = c(sqrt(diag(vcov(r_pol)))[['rep_prime']],
+                        sqrt(diag(vcov(r_pol)))[['nrep_prime']],
+                        sqrt(diag(vcov(h_pol)))[['rep_prime']],
+                        sqrt(diag(vcov(h_pol)))[['nrep_prime']]))
+polp_df
+```
+
+
+## Putting all the estimates together
+```{r}
+dfpol <- reduce( list(mp_df, polp_df), bind_rows)
+dfpol
+```
+
+
+## Making the graphs and putting them together
+```{r}
+dist_pol <- dfpol %>% filter(outcome=="redistribution") %>%
+  mutate(within_group_typed = ifelse(treatment_grouped=="Average","All", within_group_typed )) %>%
+  ggplot(aes(x=treatment_grouped, 
+             y=estimate, fill=within_group_typed, group=within_group_typed)) +
+  geom_bar(stat='identity',position=position_dodge2(width=0.1)) +
+  geom_errorbar(aes(ymin=estimate-se, ymax=estimate+se), 
+                position=position_dodge(width=0.9), 
+                width=0.3, alpha=0.4) +
+  theme_minimal() +
+  scale_x_discrete(labels=element_blank()) +
+  labs(y = "Treatment effect \u00B1 s.e.", x=element_blank(),
+       title ="Redistribution", fill="Group:") +
+  scale_y_continuous(lim = c(-0.07, 0.13)) 
+dist_pol
+```
+
+```{r}
+healthcare_pol <- dfpol %>% filter(outcome=="healthcare") %>%
+  mutate(within_group_typed = ifelse(treatment_grouped=="Average","All", within_group_typed )) %>%
+  ggplot(aes(x=treatment_grouped, 
+             y=estimate, fill=within_group_typed, group=within_group_typed)) +
+  geom_bar(stat='identity',position=position_dodge2(width=0.1)) +
+  geom_errorbar(aes(ymin=estimate-se, ymax=estimate+se), 
+                position=position_dodge(width=0.9), 
+                width=0.3, alpha=0.4) +
+  theme_minimal() +
+  scale_x_discrete(labels=element_blank()) +
+  labs(y = "Treatment effect \u00B1 s.e.", x=element_blank(),
+       title ="Universal healthcare", fill="Group:") +
+  scale_y_continuous(lim = c(-0.02, 0.02))
+healthcare_pol
+```
+
+
+# Relating policy to moral landscape
+
+First, creating the dataset of state means
+```{r}
+outcome_means <- ipsos %>% 
+  group_by(state) %>%
+  mutate( inequality_luck = ifelse(luck_d, inequality, NA)) %>%
+  summarize(
+    mean_happiness = weighted.mean(happiness_ladder, weight, na.rm=TRUE),
+    mean_zsolidarity = weighted.mean(zsolidarity, weight, na.rm=TRUE),
+    mean_zluckunfair = weighted.mean(zluck_unfair, weight, na.rm=TRUE),
+    mean_zredistribution = weighted.mean(zredistribution, weight, na.rm=TRUE),
+    mean_znationalism = weighted.mean(znationalism, weight, na.rm = TRUE), 
+    mean_universalhealthcare = weighted.mean(fed_univ_healthcare, weight, na.rm=TRUE),
+    n = sum(Weightvar)
+  )
+```
+
+## First panel relates redistribution to solidarity
+```{r}
+gSR <- outcome_means %>% ggplot(aes(y=mean_zredistribution, x=mean_zsolidarity, weight=n)) +
+  geom_point(aes(size=n), alpha=0.25) +   
+  geom_smooth(method='lm', color="black", linetype="solid") +
+  theme_minimal() +
+  theme(legend.position = 'none') +
+  labs(x = "Solidarity (Z-score)",
+       y = "Z-score",
+       title ="Redistribution")
+gSR
+```
+
+## Second panel 
+```{r}
+gLR <- outcome_means %>% ggplot(aes(y=mean_zredistribution, x=mean_zluckunfair, weight=n)) +
+  geom_point(aes(size=n), alpha=0.25) +   
+  geom_smooth(method='lm', color="black", linetype="solid") +
+  theme_minimal() +
+  theme(legend.position = 'none') +
+  labs(x = "Luck unfair (Z-score)",
+       y = "Z-score",
+       title ="Redistribution")
+gLR
+```
+
+
+## Third panel relates health care to solidarity
+
+```{r}
+gSH <- outcome_means %>% ggplot(aes(y=mean_universalhealthcare, x=mean_zsolidarity, weight=n)) +
+  geom_point(aes(size=n), alpha=0.25) + 
+  geom_smooth(method='lm', color="black", linetype="solid") +
+  theme_minimal() +
+  theme(legend.position = 'none') +
+  labs(x = "Solidarity (Z-score)",
+       y = "Scale: 0\u20131",
+       title ="Universal healthcare")
+gSH
+```
+
+## Fourth panel relates health care support to luck unfair
+```{r}
+gIH <- outcome_means %>% ggplot(aes(y=mean_universalhealthcare, x=mean_zluckunfair, weight=n)) +
+  geom_point(aes(size=n), alpha=0.25) +
+  geom_smooth(method='lm', color="black", linetype="solid") +
+  theme_minimal() +
+  theme(legend.position = 'none') +
+  labs(x = "Luck unfair (Z-score)",
+       y = "Scale: 0\u20131",
+       title = "Universal healthcare")
+gIH
+```
+
+
+# Remixes
+```{r}
+gNR <- outcome_means %>% ggplot(aes(y=mean_zredistribution, x=mean_znationalism, weight=n)) +
+  geom_point(aes(size=n), alpha=0.25) +   
+  geom_smooth(method='lm', color="black", linetype="solid") +
+  theme_minimal() +
+  theme(legend.position = 'none') +
+  labs(x = "Nationalism (Z-score)",
+       y = "Z-score",
+       title ="Redistribution")
+gNR
+```
+
+```{r}
+gNH <- outcome_means %>% ggplot(aes(y=mean_universalhealthcare, x=mean_znationalism, weight=n)) +
+  geom_point(aes(size=n), alpha=0.25) +   
+  geom_smooth(method='lm', color="black", linetype="solid") +
+  theme_minimal() +
+  theme(legend.position = 'none') +
+  labs(x = "Nationalism (Z-score)",
+       y = "Scale: 0\u20131",
+       title ="Universal healthcare")
+gNH
+```
+
+```{r}
+remix_redist <- gSR + gNR + gLR +  dist_pol + plot_annotation(tag_levels = 'a') 
+remix_redist
+ggsave(here::here("graphs","remix_redist.pdf"), width=16, height=10, units="cm")
+```
+
+The same remix figure for the Supplementary materials, with health cares as outcome.
+```{r}
+remix_redist_health <- gSH + gNH + gIH +  healthcare_pol + plot_annotation(tag_levels = 'a') 
+remix_redist_health 
+ggsave(here::here("graphs","remix_health.pdf"), width=16, height=10, units="cm")
+```
+
+# Moral and political landscape
+We want to show treatment effects on moral landscape. 
+
+```{r}
+political_df <- ipsos %>% filter(!is.na(corona_prime)) %>%
+  filter(!is.na(republican)) %>%
+  group_by(republican, corona_prime) %>%
+  summarize( mean_zsolidarity = weighted.mean(zsolidarity, Weightvar, na.rm=TRUE),
+             mean_zluckunfair = weighted.mean(zluck_unfair, Weightvar, na.rm=TRUE),
+             se_zsolidarity = weighted.se(zsolidarity, Weightvar, na.rm=TRUE),
+             se_zluckunfair = weighted.se(zluck_unfair, Weightvar, na.rm=TRUE))
+overall_df <- ipsos %>%  filter(!is.na(corona_prime)) %>%
+  group_by(corona_prime) %>%
+  summarize( mean_zsolidarity = weighted.mean(zsolidarity, Weightvar, na.rm=TRUE),
+             mean_zluckunfair = weighted.mean(zluck_unfair, Weightvar, na.rm=TRUE),
+             se_zsolidarity = weighted.se(zsolidarity, Weightvar, na.rm=TRUE),
+             se_zluckunfair = weighted.se(zluck_unfair, Weightvar, na.rm=TRUE))
+joined_df <- political_df %>% bind_rows(overall_df) %>%
+  ungroup() %>%
+  mutate(grph_group = ifelse(!is.na(republican), 2+republican, 1),
+         polgr = factor(grph_group, labels=c("Average", "Non-Republican", "Republican")),
+         prime = factor(corona_prime, labels=c("Control", "COVID-19 reminded")))
+```
+
+
+```{r}
+landscape_graph <- joined_df %>% ggplot(aes(x=mean_zluckunfair, y=mean_zsolidarity, 
+                                            color=polgr, shape=prime,
+                                            ymin = mean_zsolidarity - se_zsolidarity,
+                                            ymax = mean_zsolidarity + se_zluckunfair,
+                                            xmin = mean_zluckunfair - se_zluckunfair,
+                                            xmax = mean_zluckunfair + se_zluckunfair)) +
+  geom_point(size=5) + 
+  geom_errorbar(orientation = "x", width=0.02, color="black", alpha=0.4) +
+  geom_errorbar(orientation = "y", width=0.02, color="black", alpha=0.4) +
+  theme_minimal() +
+  labs( x = "Luck is unfair (mean Z-score) \u00B1 s.e.",
+        y = "Solidarity (mean Z-score) \u00B1 s.e.",
+        color = "Group:",
+        shape = "Treatment:") +
+  guides(color = guide_legend(order=1),
+         shape = guide_legend(order=2)) + 
+  guides(shape = guide_legend(override.aes = list(shape = c(1,2))))
+landscape_graph
+ggsave(here::here("graphs","landscape_graph.pdf"), width=16, height=10, units="cm")
+
+  
+```
+
+

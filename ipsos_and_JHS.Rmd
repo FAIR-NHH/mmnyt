@@ -1,0 +1,157 @@
+---
+title: "Linking survey to JHS database"
+author: "Erik Ø. Sørensen"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tmap)
+library(spData)
+library(tidyverse)
+library(haven)
+library(lubridate)
+library(fastDummies)
+library(reldist)
+library(patchwork)
+library(sjlabelled)
+source("functions.R")
+data(us_states)
+data(us_states_df)
+Sys.setlocale("LC_TIME", "en_US.UTF-8")
+```
+
+This file generates the Figure about the COVID-19 reminder and 
+outputs a dataset with state-level numbers of confirmed cases 
+in `data/corona_status_March-28.csv`.
+
+# Reading data 
+
+Reading data from Ipsos:
+```{r message=FALSE, warning=FALSE}
+wavedate_df <- tribble(~Wavemarker, ~wavedt,
+                       4, "2020-3-18",  # Not to be used - No COVID-19 reminder
+                       5, "2020-3-24",
+                       6, "2020-3-25", 
+                       7, "2020-3-26",
+                       8, "2020-3-27",
+                       9, "2020-3-30",
+                       10,"2020-3-31",
+                       11,"2020-4-1", 
+                       12,"2020-4-2") %>% 
+  mutate(wavedt = as.Date(wavedt))
+
+ipsos <- haven::read_dta(here::here("data","processed", "final_ipsos_cleaned.dta")) %>%
+ mutate( state = as.character(haven::as_factor(State_Recoded)),
+         inequality_luck = ifelse(luck_d, inequality, NA),
+         solidarity = 10 - prior_self_over_soc,
+         inequality_aversion = luck_unfair_agree,
+         redistribution = gov_reduce_inequality_agree,
+         female = as.numeric(resp_gender==2),
+         ) %>% left_join(wavedate_df) %>%
+  filter(!is.na(wavedt))
+```
+
+I have downloaded the JHS covid-19 database of confirmed cases
+```{r}
+confirmed_US <- read_csv(here::here("data", "raw", "time_series_covid19_confirmed_US.csv"))
+```
+Reshaping the JHS data to a longer format that is easier to work with:
+```{r}
+confirmed_long <- confirmed_US %>% 
+  pivot_longer(`1/22/20`:`5/4/20`, names_to="covid_date", values_to="n_confirmed") %>%
+  mutate(cdate = mdy(covid_date)) %>% 
+  group_by(Province_State, cdate) %>%
+  summarize(confirmed = sum(n_confirmed))
+```
+
+We want to join by population (state level)
+```{r}
+population <- read_csv(url("https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/state/detail/SCPRC-EST2019-18+POP-RES.csv")) %>% 
+  janitor::clean_names() %>%
+  dplyr::select(c("name", "popestimate2019")) %>%
+  rename(state = name, pop2019 = popestimate2019) %>%
+  filter(state != "United States")
+```
+
+
+# Merging outcomes
+Restricting the set of regions to the states and DC, not the other
+territories as well
+```{r}
+US_covid_outcomes <- confirmed_long 
+long_data <- US_covid_outcomes %>% rename(state = Province_State) %>%
+    right_join(population, by=c("state")) %>%
+  mutate( confirmed_by_100_000 = confirmed/pop2019 * 100000) %>%
+  filter( state %in% ipsos$state )
+```
+
+# Confirmed cases and survey period
+
+```{r}
+survey_period <- long_data %>% ggplot(aes(x=cdate, y=confirmed_by_100_000, 
+                                 group=state)) +
+  geom_rect(aes(xmin=as.Date("2020-03-24"),
+                xmax=as.Date("2020-04-02"), 
+                ymin=0, 
+                ymax=Inf
+                ), fill="grey80") +
+  geom_line(alpha=0.5) +
+  scale_x_date(limits = as.Date(c("2020-03-01", "2020-05-05"))) +
+  theme_minimal() +
+  scale_y_log10(labels = function(x) format(x, scientific = FALSE)) + 
+  labs(y="# Confirmed / 100,000", 
+       x=element_blank())
+survey_period       
+```
+
+
+# The data needed for the PAP
+The PAP specified that we would use the status per March 26 as reference for how
+hard each state was hit by the virus, this was based on the idea that the 26th would
+be the mid point of the survey. Instead the survey was a couple of days delayed,
+and not March 28 is closer to the mid of the survey.
+```{r}
+corona_PAP <- US_covid_outcomes %>% 
+  filter(cdate == "2020-03-28") %>%
+  rename(state = Province_State) %>%
+  right_join(population, by="state") %>% filter(!is.na(cdate))
+corona_PAP %>% write_csv(here::here("data","corona_status_March-28.csv"))
+```
+
+
+# Correlation between subjective report and confirmed cases
+
+Calculating state averages of the priming question to correlate with level confirmed
+```{r}
+primes <- ipsos %>% group_by(state) %>%
+  summarize(mean_affected = weighted.mean(prime_affected, Weightvar, na.rm=TRUE),
+            mean_estlength = weighted.mean(prime_weeks, Weightvar, na.rm=TRUE)) %>%
+  left_join(corona_PAP, by="state") %>%
+  mutate(confirmed_by_100_000 = confirmed/pop2019 * 100000)
+```
+
+Plotting the self report of how much the local community is affected against 
+actual confirmed rate per March 28.
+```{r}
+p1 <- primes %>% ggplot(aes(x=confirmed_by_100_000, y=mean_affected)) + 
+  scale_x_log10() + 
+  geom_smooth(method='lm', color='black') + 
+  geom_point(aes(size=pop2019), alpha=0.4) +
+  theme_minimal() +
+  labs(x="# Confirmed / 100,000 (March 28)",
+       y="Mean degree affected") + 
+  theme(legend.position = "none")
+p1
+```
+
+Now a version that combines the Covid-19 data with survey period and 
+the extent to which they are affected.
+
+```{r}
+survey_period + p1 + plot_annotation(tag_levels = "a")
+ggsave(here::here("graphs","survey_period.pdf"), width=16, height=10, units="cm")
+```

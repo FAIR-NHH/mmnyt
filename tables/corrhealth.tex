@@ -1,0 +1,53 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{9}{c}}
+\toprule
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}&\multicolumn{1}{c}{(6)}&\multicolumn{1}{c}{(7)}&\multicolumn{1}{c}{(8)}&\multicolumn{1}{c}{(9)}\\
+                    &\multicolumn{1}{c}{Health care (std.)}&\multicolumn{1}{c}{Health care (std.)}&\multicolumn{1}{c}{Health care (std.)}&\multicolumn{1}{c}{Health care (std.)}&\multicolumn{1}{c}{Health care (std.)}&\multicolumn{1}{c}{Health care (std.)}&\multicolumn{1}{c}{Health care (std.)}&\multicolumn{1}{c}{Health care (std.)}&\multicolumn{1}{c}{Health care (std.)}\\
+\midrule
+zprior\_soc\_over\_self&       0.110\sym{***}&       0.107\sym{***}&       0.035\sym{***}&                     &                     &                     &                     &                     &                     \\
+                    &     (0.012)         &     (0.012)         &     (0.012)         &                     &                     &                     &                     &                     &                     \\
+\addlinespace
+Republican          &                     &                     &      -0.988\sym{***}&                     &                     &      -0.958\sym{***}&                     &                     &      -0.950\sym{***}\\
+                    &                     &                     &     (0.025)         &                     &                     &     (0.025)         &                     &                     &     (0.025)         \\
+\addlinespace
+High inc.           &                     &                     &      -0.081\sym{***}&                     &                     &      -0.078\sym{***}&                     &                     &      -0.060\sym{**} \\
+                    &                     &                     &     (0.024)         &                     &                     &     (0.024)         &                     &                     &     (0.024)         \\
+\addlinespace
+High educ.          &                     &                     &       0.028         &                     &                     &       0.025         &                     &                     &       0.029         \\
+                    &                     &                     &     (0.024)         &                     &                     &     (0.023)         &                     &                     &     (0.023)         \\
+\addlinespace
+Female              &                     &                     &       0.013         &                     &                     &       0.020         &                     &                     &       0.006         \\
+                    &                     &                     &     (0.022)         &                     &                     &     (0.022)         &                     &                     &     (0.022)         \\
+\addlinespace
+Retirement age      &                     &                     &      -0.185\sym{***}&                     &                     &      -0.173\sym{***}&                     &                     &      -0.168\sym{***}\\
+                    &                     &                     &     (0.027)         &                     &                     &     (0.027)         &                     &                     &     (0.027)         \\
+\addlinespace
+High confirmed      &                     &                     &       0.311\sym{***}&                     &                     &       0.317\sym{***}&                     &                     &       0.334\sym{***}\\
+                    &                     &                     &     (0.103)         &                     &                     &     (0.102)         &                     &                     &     (0.103)         \\
+\addlinespace
+Child               &                     &                     &       0.058\sym{**} &                     &                     &       0.055\sym{*}  &                     &                     &       0.036         \\
+                    &                     &                     &     (0.028)         &                     &                     &     (0.028)         &                     &                     &     (0.028)         \\
+\addlinespace
+Living alone        &                     &                     &      -0.037         &                     &                     &      -0.041         &                     &                     &      -0.040         \\
+                    &                     &                     &     (0.029)         &                     &                     &     (0.029)         &                     &                     &     (0.028)         \\
+\addlinespace
+Urban               &                     &                     &       0.100\sym{***}&                     &                     &       0.098\sym{***}&                     &                     &       0.090\sym{***}\\
+                    &                     &                     &     (0.027)         &                     &                     &     (0.027)         &                     &                     &     (0.027)         \\
+\addlinespace
+zprior\_national\_over\_global&                     &                     &                     &      -0.211\sym{***}&      -0.204\sym{***}&      -0.074\sym{***}&                     &                     &                     \\
+                    &                     &                     &                     &     (0.012)         &     (0.012)         &     (0.012)         &                     &                     &                     \\
+\addlinespace
+zluck\_unfair\_agree  &                     &                     &                     &                     &                     &                     &       0.238\sym{***}&       0.232\sym{***}&       0.148\sym{***}\\
+                    &                     &                     &                     &                     &                     &                     &     (0.012)         &     (0.012)         &     (0.011)         \\
+\addlinespace
+Constant            &      -0.000         &      -0.487\sym{***}&       0.020         &      -0.000         &      -0.477\sym{***}&       0.002         &      -0.000         &      -0.469\sym{***}&       0.014         \\
+                    &     (0.012)         &     (0.100)         &     (0.084)         &     (0.012)         &     (0.097)         &     (0.085)         &     (0.012)         &     (0.101)         &     (0.085)         \\
+\midrule
+Observations        &    8116.000         &    8116.000         &    7239.000         &    8116.000         &    8116.000         &    7239.000         &    8116.000         &    8116.000         &    7239.000         \\
+\(R^{2}\)           &       0.012         &       0.041         &       0.284         &       0.045         &       0.071         &       0.288         &       0.057         &       0.083         &       0.304         \\
+\bottomrule
+\multicolumn{10}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{10}{l}{\footnotesize \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)}\\
+\end{tabular}
+}

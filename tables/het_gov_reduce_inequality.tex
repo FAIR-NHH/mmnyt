@@ -1,0 +1,73 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{5}{c}}
+\toprule
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}\\
+                    &\multicolumn{1}{c}{Redistr}&\multicolumn{1}{c}{Redistr}&\multicolumn{1}{c}{Redistr}&\multicolumn{1}{c}{Redistr}&\multicolumn{1}{c}{Redistr}\\
+\midrule
+COVID-19 reminder   &      -0.024         &       0.032         &       0.011         &       0.011         &       0.001         \\
+                    &     (0.020)         &     (0.022)         &     (0.023)         &     (0.026)         &     (0.019)         \\
+\addlinespace
+Republican $\times$ &       0.090\sym{**} &                     &                     &                     &                     \\
+                    &     (0.038)         &                     &                     &                     &                     \\
+\addlinespace
+Republican          &      -0.774\sym{***}&      -0.729\sym{***}&      -0.729\sym{***}&      -0.729\sym{***}&      -0.729\sym{***}\\
+                    &     (0.027)         &     (0.019)         &     (0.019)         &     (0.019)         &     (0.019)         \\
+\addlinespace
+High inc.           &      -0.083\sym{***}&      -0.061\sym{**} &      -0.082\sym{***}&      -0.082\sym{***}&      -0.082\sym{***}\\
+                    &     (0.020)         &     (0.026)         &     (0.020)         &     (0.020)         &     (0.020)         \\
+\addlinespace
+High educ.          &      -0.031         &      -0.032\sym{*}  &      -0.032         &      -0.032\sym{*}  &      -0.032\sym{*}  \\
+                    &     (0.019)         &     (0.019)         &     (0.026)         &     (0.019)         &     (0.019)         \\
+\addlinespace
+Female              &      -0.004         &      -0.004         &      -0.004         &      -0.004         &      -0.004         \\
+                    &     (0.018)         &     (0.018)         &     (0.018)         &     (0.025)         &     (0.018)         \\
+\addlinespace
+Retirement age      &      -0.166\sym{***}&      -0.166\sym{***}&      -0.167\sym{***}&      -0.167\sym{***}&      -0.195\sym{***}\\
+                    &     (0.024)         &     (0.024)         &     (0.024)         &     (0.024)         &     (0.032)         \\
+\addlinespace
+Confirmed cases     &       0.560\sym{**} &       0.568\sym{**} &       0.569\sym{**} &       0.569\sym{**} &       0.570\sym{**} \\
+                    &     (0.231)         &     (0.232)         &     (0.232)         &     (0.232)         &     (0.232)         \\
+\addlinespace
+Child               &       0.082\sym{***}&       0.083\sym{***}&       0.083\sym{***}&       0.083\sym{***}&       0.083\sym{***}\\
+                    &     (0.022)         &     (0.022)         &     (0.022)         &     (0.022)         &     (0.022)         \\
+\addlinespace
+Living alone        &       0.001         &       0.002         &       0.002         &       0.002         &       0.002         \\
+                    &     (0.023)         &     (0.023)         &     (0.023)         &     (0.023)         &     (0.023)         \\
+\addlinespace
+Urban               &       0.049\sym{**} &       0.050\sym{**} &       0.050\sym{**} &       0.050\sym{**} &       0.049\sym{**} \\
+                    &     (0.021)         &     (0.021)         &     (0.021)         &     (0.021)         &     (0.021)         \\
+\addlinespace
+Northeast           &       0.016         &       0.013         &       0.013         &       0.013         &       0.013         \\
+                    &     (0.032)         &     (0.032)         &     (0.032)         &     (0.032)         &     (0.032)         \\
+\addlinespace
+Midwest             &      -0.026         &      -0.026         &      -0.027         &      -0.027         &      -0.028         \\
+                    &     (0.027)         &     (0.027)         &     (0.027)         &     (0.027)         &     (0.027)         \\
+\addlinespace
+South               &      -0.029         &      -0.029         &      -0.030         &      -0.030         &      -0.030         \\
+                    &     (0.024)         &     (0.024)         &     (0.024)         &     (0.024)         &     (0.024)         \\
+\addlinespace
+High inc. $\times$  &                     &      -0.042         &                     &                     &                     \\
+                    &                     &     (0.035)         &                     &                     &                     \\
+\addlinespace
+High educ. $\times$ &                     &                     &       0.000         &                     &                     \\
+                    &                     &                     &     (0.035)         &                     &                     \\
+\addlinespace
+Female $\times$     &                     &                     &                     &      -0.000         &                     \\
+                    &                     &                     &                     &     (0.035)         &                     \\
+\addlinespace
+Retirement age $\times$&                     &                     &                     &                     &       0.059         \\
+                    &                     &                     &                     &                     &     (0.046)         \\
+\addlinespace
+Constant            &       2.676\sym{***}&       2.648\sym{***}&       2.659\sym{***}&       2.659\sym{***}&       2.664\sym{***}\\
+                    &     (0.032)         &     (0.033)         &     (0.033)         &     (0.033)         &     (0.032)         \\
+\midrule
+Linear combination  &       0.066         &      -0.010         &       0.011         &       0.011         &       0.059         \\
+(Reminder + Interaction)&     (0.032)         &     (0.028)         &     (0.027)         &     (0.023)         &     (0.042)         \\
+Observations        &    7239.000         &    7239.000         &    7239.000         &    7239.000         &    7239.000         \\
+\(R^{2}\)           &       0.233         &       0.232         &       0.232         &       0.232         &       0.232         \\
+\bottomrule
+\multicolumn{6}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{6}{l}{\footnotesize \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)}\\
+\end{tabular}
+}

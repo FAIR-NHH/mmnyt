@@ -1,0 +1,40 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{6}{c}}
+\toprule
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}&\multicolumn{1}{c}{(6)}\\
+                    &\multicolumn{1}{c}{Redistribution (std.)}&\multicolumn{1}{c}{Redistribution (std.)}&\multicolumn{1}{c}{Redistribution (std.)}&\multicolumn{1}{c}{Redistribution (std.)}&\multicolumn{1}{c}{Redistribution (std.)}&\multicolumn{1}{c}{Redistribution (std.)}\\
+\midrule
+Covid-19            &      -0.032         &       0.042         &       0.014         &       0.012         &       0.000         &      -0.025         \\
+                    &     (0.026)         &     (0.028)         &     (0.030)         &     (0.034)         &     (0.025)         &     (0.033)         \\
+\addlinespace
+Republican $\times$ &       0.117\sym{**} &                     &                     &                     &                     &                     \\
+                    &     (0.049)         &                     &                     &                     &                     &                     \\
+\addlinespace
+High inc. $\times$  &                     &      -0.056         &                     &                     &                     &                     \\
+                    &                     &     (0.046)         &                     &                     &                     &                     \\
+\addlinespace
+High educ. $\times$ &                     &                     &      -0.001         &                     &                     &                     \\
+                    &                     &                     &     (0.046)         &                     &                     &                     \\
+\addlinespace
+Female $\times$     &                     &                     &                     &       0.003         &                     &                     \\
+                    &                     &                     &                     &     (0.045)         &                     &                     \\
+\addlinespace
+Retirement age $\times$&                     &                     &                     &                     &       0.077         &                     \\
+                    &                     &                     &                     &                     &     (0.059)         &                     \\
+\addlinespace
+High confirmed $\times$&                     &                     &                     &                     &                     &       0.077\sym{*}  \\
+                    &                     &                     &                     &                     &                     &     (0.045)         \\
+\addlinespace
+Constant            &       0.418\sym{***}&       0.382\sym{***}&       0.396\sym{***}&       0.397\sym{***}&       0.403\sym{***}&       0.415\sym{***}\\
+                    &     (0.041)         &     (0.042)         &     (0.042)         &     (0.043)         &     (0.041)         &     (0.043)         \\
+\midrule
+Linear combination  &       0.085         &      -0.014         &       0.014         &       0.016         &       0.078         &       0.052         \\
+(Reminder+ Interaction)&     (0.041)         &     (0.036)         &     (0.034)         &     (0.030)         &     (0.054)         &     (0.031)         \\
+Observations        &    7239.000         &    7239.000         &    7239.000         &    7239.000         &    7239.000         &    7239.000         \\
+\(R^{2}\)           &       0.233         &       0.232         &       0.232         &       0.232         &       0.232         &       0.232         \\
+\bottomrule
+\multicolumn{7}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{7}{l}{\footnotesize \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)}\\
+\end{tabular}
+}

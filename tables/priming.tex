@@ -1,0 +1,56 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{6}{c}}
+\toprule
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}&\multicolumn{1}{c}{(6)}\\
+                    &\multicolumn{1}{c}{Solidarity (std.)}&\multicolumn{1}{c}{Solidarity (std.)}&\multicolumn{1}{c}{Nationalism (std.)}&\multicolumn{1}{c}{Nationalism (std.)}&\multicolumn{1}{c}{Luck unfair (std.)}&\multicolumn{1}{c}{Luck unfair (std.)}\\
+\midrule
+Covid-19            &       0.070\sym{***}&       0.065\sym{**} &       0.017         &       0.006         &      -0.086\sym{***}&      -0.084\sym{***}\\
+                    &     (0.024)         &     (0.025)         &     (0.024)         &     (0.024)         &     (0.024)         &     (0.026)         \\
+\addlinespace
+Republican          &                     &      -0.307\sym{***}&                     &       0.554\sym{***}&                     &      -0.339\sym{***}\\
+                    &                     &     (0.026)         &                     &     (0.025)         &                     &     (0.027)         \\
+\addlinespace
+High inc.           &                     &      -0.007         &                     &       0.044         &                     &      -0.140\sym{***}\\
+                    &                     &     (0.028)         &                     &     (0.027)         &                     &     (0.028)         \\
+\addlinespace
+High educ.          &                     &       0.079\sym{***}&                     &      -0.083\sym{***}&                     &       0.020         \\
+                    &                     &     (0.027)         &                     &     (0.026)         &                     &     (0.027)         \\
+\addlinespace
+Female              &                     &       0.103\sym{***}&                     &       0.050\sym{**} &                     &       0.072\sym{***}\\
+                    &                     &     (0.025)         &                     &     (0.025)         &                     &     (0.026)         \\
+\addlinespace
+Retirement age      &                     &      -0.114\sym{***}&                     &       0.209\sym{***}&                     &      -0.142\sym{***}\\
+                    &                     &     (0.032)         &                     &     (0.029)         &                     &     (0.033)         \\
+\addlinespace
+High confirmed      &                     &      -0.039         &                     &       0.020         &                     &      -0.008         \\
+                    &                     &     (0.028)         &                     &     (0.027)         &                     &     (0.029)         \\
+\addlinespace
+Child               &                     &      -0.088\sym{***}&                     &      -0.001         &                     &       0.129\sym{***}\\
+                    &                     &     (0.031)         &                     &     (0.031)         &                     &     (0.032)         \\
+\addlinespace
+Living alone        &                     &      -0.017         &                     &      -0.042         &                     &       0.018         \\
+                    &                     &     (0.035)         &                     &     (0.034)         &                     &     (0.034)         \\
+\addlinespace
+Urban               &                     &       0.024         &                     &      -0.043         &                     &       0.077\sym{**} \\
+                    &                     &     (0.031)         &                     &     (0.029)         &                     &     (0.031)         \\
+\addlinespace
+Northeast           &                     &       0.023         &                     &       0.003         &                     &       0.128\sym{***}\\
+                    &                     &     (0.043)         &                     &     (0.041)         &                     &     (0.043)         \\
+\addlinespace
+Midwest             &                     &       0.034         &                     &       0.061\sym{*}  &                     &      -0.042         \\
+                    &                     &     (0.037)         &                     &     (0.036)         &                     &     (0.039)         \\
+\addlinespace
+South               &                     &      -0.033         &                     &       0.042         &                     &       0.046         \\
+                    &                     &     (0.034)         &                     &     (0.033)         &                     &     (0.035)         \\
+\addlinespace
+Constant            &      -0.035\sym{**} &       0.041         &      -0.008         &      -0.243\sym{***}&       0.043\sym{**} &       0.102\sym{**} \\
+                    &     (0.017)         &     (0.048)         &     (0.017)         &     (0.047)         &     (0.018)         &     (0.048)         \\
+\midrule
+Observations        &    8116.000         &    7239.000         &    8116.000         &    7239.000         &    8116.000         &    7239.000         \\
+\(R^{2}\)           &       0.001         &       0.034         &       0.000         &       0.093         &       0.002         &       0.050         \\
+\bottomrule
+\multicolumn{7}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{7}{l}{\footnotesize \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)}\\
+\end{tabular}
+}
