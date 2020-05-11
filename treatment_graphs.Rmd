@@ -42,11 +42,10 @@ wavedate_df <- tribble(~Wavemarker, ~wavedt,
                        12,"2020-4-2") %>% 
   mutate(wavedt = as.Date(wavedt))
 
-ipsos <- haven::read_dta(here::here("data","processed", "final_ipsos_cleaned.dta")) %>%
+ipsos <- haven::read_dta(here::here("data","processed", "ipsos_mmnyt_processed_release.dta")) %>%
  mutate( year=2020,
          country="United States",
          state = as.character(haven::as_factor(State_Recoded)),
-         inequality_luck = ifelse(luck_d, inequality, NA),
          solidarity = 10 - prior_self_over_soc,
          zsolidarity = weighted.scale(solidarity, Weightvar, na.rm=TRUE),
          nationalism = prior_national_over_global,
@@ -675,9 +674,7 @@ First, creating the dataset of state means
 ```{r}
 outcome_means <- ipsos %>% 
   group_by(state) %>%
-  mutate( inequality_luck = ifelse(luck_d, inequality, NA)) %>%
   summarize(
-    mean_happiness = weighted.mean(happiness_ladder, weight, na.rm=TRUE),
     mean_zsolidarity = weighted.mean(zsolidarity, weight, na.rm=TRUE),
     mean_zluckunfair = weighted.mean(zluck_unfair, weight, na.rm=TRUE),
     mean_zredistribution = weighted.mean(zredistribution, weight, na.rm=TRUE),

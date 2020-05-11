@@ -384,11 +384,10 @@ summary {
                        12,&quot;2020-4-2&quot;) %&gt;% 
   mutate(wavedt = as.Date(wavedt))
 
-ipsos &lt;- haven::read_dta(here::here(&quot;data&quot;,&quot;processed&quot;, &quot;final_ipsos_cleaned.dta&quot;)) %&gt;%
+ipsos &lt;- haven::read_dta(here::here(&quot;data&quot;,&quot;processed&quot;, &quot;ipsos_mmnyt_processed_release.dta&quot;)) %&gt;%
  mutate( year=2020,
          country=&quot;United States&quot;,
          state = as.character(haven::as_factor(State_Recoded)),
-         inequality_luck = ifelse(luck_d, inequality, NA),
          solidarity = 10 - prior_self_over_soc,
          zsolidarity = weighted.scale(solidarity, Weightvar, na.rm=TRUE),
          znationalism = weighted.scale(prior_national_over_global, Weightvar, na.rm = TRUE),

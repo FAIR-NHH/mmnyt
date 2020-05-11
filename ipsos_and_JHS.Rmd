@@ -44,9 +44,8 @@ wavedate_df <- tribble(~Wavemarker, ~wavedt,
                        12,"2020-4-2") %>% 
   mutate(wavedt = as.Date(wavedt))
 
-ipsos <- haven::read_dta(here::here("data","processed", "final_ipsos_cleaned.dta")) %>%
+ipsos <- haven::read_dta(here::here("data","processed", "ipsos_mmnyt_processed_release.dta")) %>%
  mutate( state = as.character(haven::as_factor(State_Recoded)),
-         inequality_luck = ifelse(luck_d, inequality, NA),
          solidarity = 10 - prior_self_over_soc,
          inequality_aversion = luck_unfair_agree,
          redistribution = gov_reduce_inequality_agree,

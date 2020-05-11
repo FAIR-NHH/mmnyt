@@ -373,7 +373,7 @@ summary {
 <h1>Reading data</h1>
 <p>Reading data from Ipsos:</p>
 <pre class="r"><code>wavedate_df &lt;- tribble(~Wavemarker, ~wavedt,
-                       4, &quot;2020-3-18&quot;,
+                       4, &quot;2020-3-18&quot;,  # Not to be used - No COVID-19 reminder
                        5, &quot;2020-3-24&quot;,
                        6, &quot;2020-3-25&quot;, 
                        7, &quot;2020-3-26&quot;,
@@ -384,11 +384,10 @@ summary {
                        12,&quot;2020-4-2&quot;) %&gt;% 
   mutate(wavedt = as.Date(wavedt))
 
-ipsos &lt;- haven::read_dta(here::here(&quot;data&quot;,&quot;processed&quot;, &quot;final_ipsos_cleaned.dta&quot;)) %&gt;%
+ipsos &lt;- haven::read_dta(here::here(&quot;data&quot;,&quot;processed&quot;, &quot;ipsos_mmnyt_processed_release.dta&quot;)) %&gt;%
  mutate( year=2020,
          country=&quot;United States&quot;,
          state = as.character(haven::as_factor(State_Recoded)),
-         inequality_luck = ifelse(luck_d, inequality, NA),
          solidarity = 10 - prior_self_over_soc,
          zsolidarity = weighted.scale(solidarity, Weightvar, na.rm=TRUE),
          nationalism = prior_national_over_global,
@@ -1528,9 +1527,7 @@ healthcare_pol</code></pre>
 <p>First, creating the dataset of state means</p>
 <pre class="r"><code>outcome_means &lt;- ipsos %&gt;% 
   group_by(state) %&gt;%
-  mutate( inequality_luck = ifelse(luck_d, inequality, NA)) %&gt;%
   summarize(
-    mean_happiness = weighted.mean(happiness_ladder, weight, na.rm=TRUE),
     mean_zsolidarity = weighted.mean(zsolidarity, weight, na.rm=TRUE),
     mean_zluckunfair = weighted.mean(zluck_unfair, weight, na.rm=TRUE),
     mean_zredistribution = weighted.mean(zredistribution, weight, na.rm=TRUE),
