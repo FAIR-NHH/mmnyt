@@ -382,3 +382,4 @@ file ../processed/ipsos_mmnyt_processed_release.dta saved
 . 
 end of do-file
 
+. exit, clear
