@@ -15,7 +15,7 @@ ipsos data in `data/processed/ipsos_mmnyt_processed_release.dta`.
 There are 3 `.Rmd` files in the top level directory that prepares the
 graphs and the Romano-Wolf adjusted p-values. The
 `mht_interactions.Rmd`, which calculates the Romano-Wolf ajdusted
-p-values using a bootsrap approach assumes that the computer to run on
+p-values using a bootstrap approach assumes that the computer to run on
 has a lot of memory and computing cores (it runs fine with 32GB memory
 and an AMD 16-Core X3950). If run on a more modest computer, the
 "ncpus" should be set accordingly.
@@ -27,5 +27,10 @@ information.
 All graphs are saved in `.pdf` format to the `./graphs` directory and
 the regression tables, in `.tex` format, are saved to the `./tables`
 directory. 
+
+The descriptive statistics (S1) and the tables with Romano-Wolf
+adjusted p-velues (S15-S20) have been manually entered from numbers
+in the log files.
+
 
 
