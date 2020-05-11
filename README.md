@@ -5,11 +5,11 @@ Repo for the paper "Solidarity and Fairness in Times of Crisis" (Cappelen, Falch
 ## Organization of data processing
 There are raw data in `data/raw/`, one file downloaded from the JHS
 COVID-19 database, and one Stata-file from our own survey. 
-The Stata files have labels from Ipsos.
+The Stata file from our own survey has labels provided by Ipsos.
 
 In `data/scripts` there is one Stata do-file that reads and make
 some initial transforms of the raw data and saves the processed
-ipsos data in `data/processed/ipsos_mmnyt_processed_release.dta`. 
+Ipsos data in `data/processed/ipsos_mmnyt_processed_release.dta`. 
 
 ## Organization of analysis
 There are 3 `.Rmd` files in the top level directory that prepares the
