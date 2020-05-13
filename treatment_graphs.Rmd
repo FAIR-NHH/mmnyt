@@ -826,4 +826,9 @@ ggsave(here::here("graphs","landscape_graph.pdf"), width=16, height=10, units="c
   
 ```
 
+# sessionInfo()
+
+```{r}
+sessionInfo()
+```
 

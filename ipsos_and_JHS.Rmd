@@ -154,3 +154,10 @@ the extent to which they are affected.
 survey_period + p1 + plot_annotation(tag_levels = "a")
 ggsave(here::here("graphs","survey_period.pdf"), width=16, height=10, units="cm")
 ```
+
+# sessionInfo()
+
+```{r}
+sessionInfo()
+```
+

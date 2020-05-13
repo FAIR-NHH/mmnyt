@@ -552,3 +552,10 @@ Now, for calculating the bootstrapped p-values and with the Romano-Wolf adjustme
 rw5 <- bs_healthcare_heterogeneity(ipsos)
 rw5 %>% knitr::kable(digits=3)
 ```
+
+# sessionInfo()
+
+```{r}
+sessionInfo()
+```
+
