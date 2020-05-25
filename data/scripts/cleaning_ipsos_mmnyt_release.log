@@ -1,9 +1,9 @@
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  /home/sameos/Documents/gits/mmnyt/data/scripts/cleaning_ipsos_mmnyt
-> _release.log
+       log:  /home/sameos/Documents/gits/mmnyt/data/scripts/cleaning_ipsos_mmny
+> t_release.log
   log type:  text
- opened on:  11 May 2020, 13:50:19
+ opened on:  25 May 2020, 13:01:36
 
 .         
 . *Loading data:  
@@ -15,8 +15,8 @@
 . *Cleaning dataset
 . drop ReturnCode IDType MRK_SMPGRP MRK_SMPSRC
 
-. drop MRK_STATUS_GDW MRK_DIFF_TIME_GDW QUOTA_GDW QUOTA_CAN_GENDER_GDW QUOTA_CAN
-> _AGERANGE_GDW QUOTA_CAN_REGION_GDW
+. drop MRK_STATUS_GDW MRK_DIFF_TIME_GDW QUOTA_GDW QUOTA_CAN_GENDER_GDW QUOTA_CA
+> N_AGERANGE_GDW QUOTA_CAN_REGION_GDW
 
 . drop MRK_ROT_GDW_1 MRK_ROT_GDW_2 QMRK_TREAT_GDW_2
 
@@ -64,8 +64,8 @@
 . label variable corona_prime "Covid-19"
 
 . 
-. label define labels54 5 "Strongly agree" 4 "Somewhat agree" 3 "Neither agree n
-> or disagree" 2 "Somewhat disagree" 1 "Strongly disagree", replace
+. label define labels54 5 "Strongly agree" 4 "Somewhat agree" 3 "Neither agree 
+> nor disagree" 2 "Somewhat disagree" 1 "Strongly disagree", replace
 
 . 
 . replace luck_unfair_agree=6-luck_unfair_agree if luck_unfair_agree!=.
@@ -80,8 +80,8 @@
 . replace noborders_agree=6-noborders_agree if noborders_agree!=.
 (6,178 real changes made)
 
-. replace gov_reduce_inequality_agree=4-gov_reduce_inequality_agree if gov_reduc
-> e_inequality_agree!=.
+. replace gov_reduce_inequality_agree=4-gov_reduce_inequality_agree if gov_redu
+> ce_inequality_agree!=.
 (5,931 real changes made)
 
 . 
@@ -91,8 +91,8 @@
 
 . label values noborders_agree labels54
 
-. label define labels60 3 "Generally agree" 2 "Neither agree nor disagree" 1 "Ge
-> nerally disagree", replace
+. label define labels60 3 "Generally agree" 2 "Neither agree nor disagree" 1 "G
+> enerally disagree", replace
 
 . 
 . replace fed_univ_healthcare=0 if fed_univ_healthcare==1
@@ -112,7 +112,7 @@
 . gen income=.
 (11,419 missing values generated)
 
-. replace income=5000 if USHHI2==1
+. replace income=2500 if USHHI2==1
 (440 real changes made)
 
 . replace income=7500 if USHHI2==2
@@ -172,7 +172,7 @@
 . replace income=137500 if USHHI2==20
 (571 real changes made)
 
-. replace income=162500 if USHHI2==21
+. replace income=175000 if USHHI2==21
 (515 real changes made)
 
 . replace income=225000 if USHHI2==22
@@ -201,39 +201,39 @@
                            income
 -------------------------------------------------------------
       Percentiles      Smallest
- 1%         5000           5000
- 5%         7500           5000
-10%        17500           5000       Obs              11,419
-25%        32500           5000       Sum of Wgt.      11,419
+ 1%         2500           2500
+ 5%         7500           2500
+10%        17500           2500       Obs              11,419
+25%        32500           2500       Sum of Wgt.      11,419
 
-50%        67500                      Mean           77845.63
-                        Largest       Std. Dev.      55149.57
+50%        67500                      Mean           78566.33
+                        Largest       Std. Dev.      56572.48
 75%       112500         250000
-90%       162500         250000       Variance       3.04e+09
-95%       162500         250000       Skewness       1.012058
-99%       250000         250000       Kurtosis       3.840813
+90%       175000         250000       Variance       3.20e+09
+95%       175000         250000       Skewness       1.002202
+99%       250000         250000       Kurtosis       3.668255
 
 . return list
 
 scalars:
                   r(N) =  11419
               r(sum_w) =  11419.00000000001
-               r(mean) =  77845.63363264549
-                r(Var) =  3041474681.649092
-                 r(sd) =  55149.56646836938
-           r(skewness) =  1.0120577881746
-           r(kurtosis) =  3.840812658451618
-                r(sum) =  888919290.4511795
-                r(min) =  5000
+               r(mean) =  78566.3253274153
+                r(Var) =  3200445977.742508
+                 r(sd) =  56572.48428116365
+           r(skewness) =  1.002202158710459
+           r(kurtosis) =  3.668254948187527
+                r(sum) =  897148868.9137559
+                r(min) =  2500
                 r(max) =  250000
-                 r(p1) =  5000
+                 r(p1) =  2500
                  r(p5) =  7500
                 r(p10) =  17500
                 r(p25) =  32500
                 r(p50) =  67500
                 r(p75) =  112500
-                r(p90) =  162500
-                r(p95) =  162500
+                r(p90) =  175000
+                r(p95) =  175000
                 r(p99) =  250000
 
 . 
@@ -278,8 +278,8 @@ scalars:
 . label variable age "Age"
 
 . 
-. *Generating conservative (republican) vs. non-republican dummy (includes 'pref
-> er not to answer'):
+. *Generating conservative (republican) vs. non-republican dummy (includes 'pre
+> fer not to answer'):
 . gen conservative=1 if GDW6==1
 (7,224 missing values generated)
 
@@ -333,7 +333,8 @@ scalars:
 . label variable higheduc "High educ."
 
 . 
-. *Generating child-dummy (having at least one child under 18 in your household)
+. *Generating child-dummy (having at least one child under 18 in your household
+> )
 . gen child=0
 
 . replace child=1 if KIDS02>0
@@ -381,5 +382,3 @@ file ../processed/ipsos_mmnyt_processed_release.dta saved
 
 . 
 end of do-file
-
-. exit, clear

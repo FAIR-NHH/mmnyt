@@ -56,7 +56,7 @@ label define labels61 0 "No, government is not responsible", add
 
 *Generating income variable from USHHI2
 gen income=.
-replace income=5000 if USHHI2==1
+replace income=2500 if USHHI2==1
 replace income=7500 if USHHI2==2
 replace income=12500 if USHHI2==3
 replace income=17500 if USHHI2==4
@@ -76,7 +76,7 @@ replace income=85000 if USHHI2==17
 replace income=95000 if USHHI2==18
 replace income=112500 if USHHI2==19
 replace income=137500 if USHHI2==20
-replace income=162500 if USHHI2==21
+replace income=175000 if USHHI2==21
 replace income=225000 if USHHI2==22
 replace income=250000 if USHHI2==23
 replace income=. if USHHI2==24
