@@ -29,7 +29,7 @@ the regression tables, in `.tex` format, are saved to the `./tables`
 directory. 
 
 The descriptive statistics (S1) and the tables with Romano-Wolf
-adjusted p-values (S15-S20) have been manually entered from numbers in
+adjusted p-values (S16-S21) have been manually entered from numbers in
 the log files. The code for (and documentation of) the Romano-Wolf
 procedure was kindly made available by Michael Wolf (`Adjust.Rdata`
 and `Wolf-ReadMe.txt`), [at his website](https://www.econ.uzh.ch/dam/jcr:41da043f-96a2-43b9-9264-da24e6b66dc0/Adjust_R_code.zip).

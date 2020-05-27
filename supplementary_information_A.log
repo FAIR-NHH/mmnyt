@@ -2,15 +2,15 @@
       name:  <unnamed>
        log:  /home/sameos/Documents/gits/mmnyt/supplementary_information_A.log
   log type:  text
- opened on:  25 May 2020, 13:02:28
+ opened on:  27 May 2020, 10:47:18
 
 . 
-. /* 
-> Need to have "esttab" and rwolf installed: 
-> net install st0085_2.pkg        
+. /*
+> Need to have "esttab" and rwolf installed:
+> net install st0085_2.pkg
 > ssc install rwolf
-> */ 
-.         
+> */
+. 
 . *Loading data:
 . insheet using data/corona_status_March-28.csv, clear
 (4 vars, 51 obs)
@@ -18,7 +18,7 @@
 . tempfile coronastat
 
 . save `coronastat'
-file /tmp/St06601.000001 saved
+file /tmp/St01278.000001 saved
 
 . use data/processed/ipsos_mmnyt_processed_release, clear
 
@@ -31,7 +31,7 @@ file /tmp/St06601.000001 saved
     -----------------------------------------
 
 . 
-. *set scheme plainplot  xlab(,nogrid) ylab(,nogrid) 
+. *set scheme plainplot  xlab(,nogrid) ylab(,nogrid)
 . est clear
 
 . 
@@ -1606,12 +1606,12 @@ zprior_soc~f |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
          (1) |   .0827092   .0385512     2.15   0.032     .0071376    .1582808
 ------------------------------------------------------------------------------
 
-. estadd scalar Wint1=r(estimate)
+. estadd scalar Wint1 r(estimate)
 
 added scalar:
               e(Wint1) =  .08270922
 
-. estadd scalar sd1=r(se)
+. estadd scalar sd1 r(se)
 
 added scalar:
                 e(sd1) =  .0385512
@@ -2601,7 +2601,389 @@ added scalar:
 
 . 
 . *************************************************************************
-. *ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, Table S6
+. *PRIMING EFFECT, HETEROGENEITY, LUCK BELIEF, Table S6
+. *************************************************************************
+. reg zluck_determ_agree corona_prime republican highinc higheduc female retire
+> ment_age high_confirmed child alone urban northeast midwest south [pw=Weightv
+> ar], robust
+(sum of wgt is 7,213.05472456784)
+
+Linear regression                               Number of obs     =      7,239
+                                                F(13, 7225)       =      17.11
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0336
+                                                Root MSE          =      .9928
+
+------------------------------------------------------------------------------
+             |               Robust
+zluck_dete~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+corona_prime |  -.0093473   .0257065    -0.36   0.716    -.0597397     .041045
+  republican |  -.1924829   .0265404    -7.25   0.000    -.2445098    -.140456
+     highinc |   .0189411   .0282323     0.67   0.502    -.0364026    .0742847
+    higheduc |   .1082831   .0276524     3.92   0.000     .0540762    .1624899
+      female |  -.2168757   .0260758    -8.32   0.000    -.2679919   -.1657595
+retiremen~ge |  -.1001959   .0315547    -3.18   0.002    -.1620523   -.0383395
+high_confi~d |  -.0040798   .0287897    -0.14   0.887    -.0605159    .0523564
+       child |   .0230295   .0324599     0.71   0.478    -.0406014    .0866604
+       alone |   .0556908   .0345754     1.61   0.107    -.0120872    .1234687
+       urban |   .0581968    .030158     1.93   0.054    -.0009217    .1173154
+   northeast |   .1218538   .0438409     2.78   0.005     .0359128    .2077948
+     midwest |  -.0153522   .0385006    -0.40   0.690    -.0908246    .0601202
+       south |  -.0534942   .0355947    -1.50   0.133    -.1232703    .0162819
+       _cons |   .0960512    .048279     1.99   0.047     .0014102    .1906922
+------------------------------------------------------------------------------
+
+. est store col1
+
+. 
+. reg zluck_determ_agree corona_prime republicanXcorona_prime republican highin
+> c higheduc female retirement_age high_confirmed child alone urban northeast m
+> idwest south [pw=Weightvar], robust
+(sum of wgt is 7,213.05472456784)
+
+Linear regression                               Number of obs     =      7,239
+                                                F(14, 7224)       =      15.93
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0337
+                                                Root MSE          =      .9928
+
+------------------------------------------------------------------------------
+             |               Robust
+zluck_dete~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+corona_prime |  -.0285368   .0338721    -0.84   0.400    -.0949361    .0378624
+republican~e |   .0489784   .0519599     0.94   0.346    -.0528782    .1508349
+  republican |   -.216803   .0373432    -5.81   0.000    -.2900066   -.1435995
+     highinc |   .0182253   .0282217     0.65   0.518    -.0370975    .0735481
+    higheduc |   .1091266   .0276619     3.95   0.000     .0549012    .1633519
+      female |  -.2168354   .0260748    -8.32   0.000    -.2679495   -.1657212
+retiremen~ge |  -.0999145    .031544    -3.17   0.002      -.16175    -.038079
+high_confi~d |  -.0039158   .0287913    -0.14   0.892    -.0603552    .0525236
+       child |   .0228197   .0324642     0.70   0.482    -.0408196     .086459
+       alone |   .0550664    .034562     1.59   0.111    -.0126852     .122818
+       urban |    .057945   .0301436     1.92   0.055    -.0011453    .1170353
+   northeast |     .12273    .043835     2.80   0.005     .0368005    .2086595
+     midwest |  -.0146619   .0385011    -0.38   0.703    -.0901354    .0608116
+       south |  -.0530075   .0356082    -1.49   0.137    -.1228099    .0167949
+       _cons |   .1050492   .0492025     2.14   0.033     .0085979    .2015004
+------------------------------------------------------------------------------
+
+. lincom corona_prime + republicanXcorona_prime
+
+ ( 1)  corona_prime + republicanXcorona_prime = 0
+
+------------------------------------------------------------------------------
+zluck_dete~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0204416   .0393364     0.52   0.603    -.0566692    .0975523
+------------------------------------------------------------------------------
+
+. estadd scalar Wint1 r(estimate)
+
+added scalar:
+              e(Wint1) =  .02044155
+
+. estadd scalar sd1 r(se)
+
+added scalar:
+                e(sd1) =  .03933635
+
+. est store col2
+
+. 
+. reg zluck_determ_agree corona_prime highincXcorona_prime republican highinc h
+> igheduc female retirement_age high_confirmed child alone urban northeast midw
+> est south [pw=Weightvar], robust
+(sum of wgt is 7,213.05472456784)
+
+Linear regression                               Number of obs     =      7,239
+                                                F(14, 7224)       =      15.89
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0336
+                                                Root MSE          =     .99286
+
+------------------------------------------------------------------------------
+             |               Robust
+zluck_dete~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+corona_prime |  -.0010902   .0329055    -0.03   0.974    -.0655946    .0634142
+highincXco~e |  -.0167539   .0516031    -0.32   0.745     -.117911    .0844032
+  republican |   -.192386   .0265374    -7.25   0.000    -.2444072   -.1403649
+     highinc |   .0272561   .0385755     0.71   0.480    -.0483632    .1028754
+    higheduc |   .1081744   .0276505     3.91   0.000     .0539712    .1623775
+      female |   -.216907   .0260785    -8.32   0.000    -.2680286   -.1657854
+retiremen~ge |  -.0999463     .03158    -3.16   0.002    -.1618523   -.0380403
+high_confi~d |  -.0041851   .0287883    -0.15   0.884    -.0606186    .0522485
+       child |   .0231199   .0324549     0.71   0.476    -.0405012     .086741
+       alone |   .0558546   .0345889     1.61   0.106    -.0119497    .1236589
+       urban |   .0582552   .0301541     1.93   0.053    -.0008555     .117366
+   northeast |   .1218266   .0438483     2.78   0.005      .035871    .2077821
+     midwest |  -.0150349   .0384961    -0.39   0.696    -.0904986    .0604287
+       south |  -.0531467   .0356084    -1.49   0.136    -.1229496    .0166561
+       _cons |   .0916452    .049351     1.86   0.063    -.0050973    .1883876
+------------------------------------------------------------------------------
+
+. lincom corona_prime + highincXcorona_prime
+
+ ( 1)  corona_prime + highincXcorona_prime = 0
+
+------------------------------------------------------------------------------
+zluck_dete~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0178441    .039715    -0.45   0.653    -.0956971    .0600088
+------------------------------------------------------------------------------
+
+. estadd scalar Wint1 r(estimate)
+
+added scalar:
+              e(Wint1) =  -.01784414
+
+. estadd scalar sd1 r(se)
+
+added scalar:
+                e(sd1) =  .03971497
+
+. est store col3
+
+. 
+. reg zluck_determ_agree corona_prime higheducXcorona_prime republican highinc 
+> higheduc female retirement_age high_confirmed child alone urban northeast mid
+> west south [pw=Weightvar], robust
+(sum of wgt is 7,213.05472456784)
+
+Linear regression                               Number of obs     =      7,239
+                                                F(14, 7224)       =      16.06
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0338
+                                                Root MSE          =      .9928
+
+------------------------------------------------------------------------------
+             |               Robust
+zluck_dete~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+corona_prime |    -.03202   .0334542    -0.96   0.339       -.0976      .03356
+higheducXc~e |   .0483195   .0519057     0.93   0.352    -.0534309    .1500698
+  republican |  -.1918851   .0265499    -7.23   0.000    -.2439307   -.1398395
+     highinc |   .0191027   .0282238     0.68   0.499    -.0362242    .0744295
+    higheduc |   .0844106   .0381533     2.21   0.027      .009619    .1592022
+      female |  -.2169366   .0260719    -8.32   0.000    -.2680452   -.1658279
+retiremen~ge |  -.1002152   .0315473    -3.18   0.001    -.1620571   -.0383733
+high_confi~d |  -.0037016   .0287982    -0.13   0.898    -.0601546    .0527513
+       child |   .0227897   .0324435     0.70   0.482     -.040809    .0863884
+       alone |   .0553533   .0345711     1.60   0.109    -.0124161    .1231227
+       urban |   .0585504   .0301745     1.94   0.052    -.0006006    .1177013
+   northeast |   .1210379   .0438292     2.76   0.006     .0351198     .206956
+     midwest |   -.015784   .0384897    -0.41   0.682     -.091235     .059667
+       south |  -.0539985   .0355596    -1.52   0.129    -.1237058    .0157088
+       _cons |   .1069859   .0486933     2.20   0.028     .0115329     .202439
+------------------------------------------------------------------------------
+
+. lincom corona_prime + higheducXcorona_prime
+
+ ( 1)  corona_prime + higheducXcorona_prime = 0
+
+------------------------------------------------------------------------------
+zluck_dete~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0162995   .0396493     0.41   0.681    -.0614247    .0940236
+------------------------------------------------------------------------------
+
+. estadd scalar Wint1 r(estimate)
+
+added scalar:
+              e(Wint1) =  .01629945
+
+. estadd scalar sd1 r(se)
+
+added scalar:
+                e(sd1) =  .03964926
+
+. est store col4
+
+. 
+. reg zluck_determ_agree corona_prime femaleXcorona_prime republican highinc hi
+> gheduc female retirement_age high_confirmed child alone urban northeast midwe
+> st south [pw=Weightvar], robust
+(sum of wgt is 7,213.05472456784)
+
+Linear regression                               Number of obs     =      7,239
+                                                F(14, 7224)       =      16.28
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0341
+                                                Root MSE          =      .9926
+
+------------------------------------------------------------------------------
+             |               Robust
+zluck_dete~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+corona_prime |   .0382227   .0386533     0.99   0.323     -.037549    .1139945
+femaleXcor~e |  -.0931002   .0515757    -1.81   0.071    -.1942037    .0080034
+  republican |  -.1926187   .0265247    -7.26   0.000    -.2446148   -.1406225
+     highinc |   .0185877   .0282261     0.66   0.510    -.0367438    .0739191
+    higheduc |   .1086109   .0276356     3.93   0.000      .054437    .1627848
+      female |  -.1711523   .0366291    -4.67   0.000    -.2429561   -.0993484
+retiremen~ge |  -.1006408    .031537    -3.19   0.001    -.1624625   -.0388191
+high_confi~d |  -.0030487   .0287745    -0.11   0.916    -.0594551    .0533578
+       child |   .0241866   .0324401     0.75   0.456    -.0394055    .0877787
+       alone |   .0557402   .0345857     1.61   0.107    -.0120578    .1235382
+       urban |   .0574804   .0301422     1.91   0.057    -.0016071    .1165679
+   northeast |   .1200145   .0437582     2.74   0.006     .0342357    .2057934
+     midwest |  -.0168297   .0384562    -0.44   0.662    -.0922151    .0585557
+       south |  -.0541926   .0355553    -1.52   0.128    -.1238914    .0155063
+       _cons |   .0736996   .0500727     1.47   0.141    -.0244575    .1718567
+------------------------------------------------------------------------------
+
+. lincom corona_prime + femaleXcorona_prime
+
+ ( 1)  corona_prime + femaleXcorona_prime = 0
+
+------------------------------------------------------------------------------
+zluck_dete~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         (1) |  -.0548775   .0341034    -1.61   0.108    -.1217301    .0119751
+------------------------------------------------------------------------------
+
+. estadd scalar Wint1 r(estimate)
+
+added scalar:
+              e(Wint1) =  -.05487747
+
+. estadd scalar sd1 r(se)
+
+added scalar:
+                e(sd1) =  .03410339
+
+. est store col5
+
+. 
+. reg zluck_determ_agree corona_prime retirement_ageXcorona_prime republican hi
+> ghinc higheduc female retirement_age high_confirmed child alone urban northea
+> st midwest south [pw=Weightvar], robust
+(sum of wgt is 7,213.05472456784)
+
+Linear regression                               Number of obs     =      7,239
+                                                F(14, 7224)       =      15.93
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0337
+                                                Root MSE          =      .9928
+
+------------------------------------------------------------------------------
+             |               Robust
+zluck_dete~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+corona_prime |  -.0200268   .0291049    -0.69   0.491     -.077081    .0370273
+retiremen~me |   .0605733   .0602736     1.00   0.315    -.0575805    .1787272
+  republican |  -.1922041   .0265406    -7.24   0.000    -.2442314   -.1401768
+     highinc |   .0183297   .0282446     0.65   0.516     -.037038    .0736974
+    higheduc |     .10856   .0276435     3.93   0.000     .0543707    .1627494
+      female |  -.2166106   .0260774    -8.31   0.000    -.2677299   -.1654912
+retiremen~ge |  -.1299731    .044991    -2.89   0.004    -.2181687   -.0417776
+high_confi~d |  -.0046175   .0287915    -0.16   0.873    -.0610573    .0518223
+       child |   .0235274   .0324505     0.73   0.468    -.0400851    .0871398
+       alone |    .055794   .0345839     1.61   0.107    -.0120005    .1235886
+       urban |   .0581021   .0301452     1.93   0.054    -.0009913    .1171956
+   northeast |   .1219165    .043838     2.78   0.005     .0359812    .2078518
+     midwest |  -.0158779   .0384813    -0.41   0.680    -.0913125    .0595566
+       south |  -.0538017   .0355895    -1.51   0.131    -.1235675    .0159641
+       _cons |   .1016197   .0487723     2.08   0.037     .0060118    .1972276
+------------------------------------------------------------------------------
+
+. lincom corona_prime + retirement_ageXcorona_prime
+
+ ( 1)  corona_prime + retirement_ageXcorona_prime = 0
+
+------------------------------------------------------------------------------
+zluck_dete~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0405465   .0527504     0.77   0.442    -.0628596    .1439527
+------------------------------------------------------------------------------
+
+. estadd scalar Wint1 r(estimate)
+
+added scalar:
+              e(Wint1) =  .04054652
+
+. estadd scalar sd1 r(se)
+
+added scalar:
+                e(sd1) =  .05275037
+
+. est store col6
+
+. 
+. reg zluck_determ_agree corona_prime high_confirmedXcorona_prime republican hi
+> ghinc higheduc female retirement_age high_confirmed child alone urban northea
+> st midwest south [pw=Weightvar], robust
+(sum of wgt is 7,213.05472456784)
+
+Linear regression                               Number of obs     =      7,239
+                                                F(14, 7224)       =      15.96
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0337
+                                                Root MSE          =     .99284
+
+------------------------------------------------------------------------------
+             |               Robust
+zluck_dete~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+corona_prime |  -.0261613   .0377858    -0.69   0.489    -.1002325      .04791
+high_confi~e |   .0331383   .0515107     0.64   0.520    -.0678377    .1341143
+  republican |   -.192174   .0265494    -7.24   0.000    -.2442186   -.1401295
+     highinc |    .019222   .0282151     0.68   0.496    -.0360879    .0745319
+    higheduc |   .1082832   .0276486     3.92   0.000     .0540839    .1624825
+      female |  -.2169916   .0260724    -8.32   0.000     -.268101   -.1658821
+retiremen~ge |  -.1006979   .0315658    -3.19   0.001    -.1625761   -.0388197
+high_confi~d |  -.0205368   .0386537    -0.53   0.595    -.0963094    .0552358
+       child |   .0231499   .0324556     0.71   0.476    -.0404726    .0867724
+       alone |   .0560258   .0345789     1.62   0.105     -.011759    .1238106
+       urban |   .0582672    .030147     1.93   0.053    -.0008298    .1173642
+   northeast |   .1223153   .0438285     2.79   0.005     .0363986     .208232
+     midwest |  -.0154801   .0385011    -0.40   0.688    -.0909535    .0599933
+       south |   -.053377   .0355912    -1.50   0.134     -.123146    .0163921
+       _cons |   .1040555   .0500751     2.08   0.038     .0058936    .2022173
+------------------------------------------------------------------------------
+
+. lincom corona_prime + high_confirmedXcorona_prime
+
+ ( 1)  corona_prime + high_confirmedXcorona_prime = 0
+
+------------------------------------------------------------------------------
+zluck_dete~e |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         (1) |   .0069771   .0349751     0.20   0.842    -.0615843    .0755384
+------------------------------------------------------------------------------
+
+. estadd scalar Wint1 r(estimate)
+
+added scalar:
+              e(Wint1) =  .00697707
+
+. estadd scalar sd1 r(se)
+
+added scalar:
+                e(sd1) =  .03497506
+
+. est store col7
+
+. 
+. esttab col1 col2 col3 col4 col5 col6 col7 using tables/het_zluckbelief.tex, /
+> //
+> replace star(* 0.10 ** 0.05 *** 0.01) booktabs se stats(Wint1 sd1 N r2, layou
+> t(@ (@)) labels("Linear combination" "(Reminder + Interaction)" "Observations
+> " "\(R^{2}\)")) /// ///
+> keep(corona_prime republicanXcorona_prime retirement_ageXcorona_prime femaleX
+> corona_prime higheducXcorona_prime highincXcorona_prime high_confirmedXcorona
+> _prime _cons) ///
+> label mtitle("Luck belief" "Luck belief" "Luck belief" "Luck belief" "Luck be
+> lief" "Luck belief" "Luck belief") ///
+> b(3)
+(output written to tables/het_zluckbelief.tex)
+
+. 
+. 
+. *************************************************************************
+. *ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, Table S7
 . *************************************************************************
 . reg zgov_reduce_inequality_agree zprior_soc_over_self [pw=Weightvar], robust
 (sum of wgt is 8,035.83568177922)
@@ -3151,7 +3533,7 @@ West Virg..  |   .1388268   .1462584     0.95   0.343    -.1478828    .4255364
 
 . 
 . *************************************************************************
-. *ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, Table S7
+. *ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, Table S8
 . *************************************************************************
 . reg zfed_univ_healthcare zprior_soc_over_self [pw=Weightvar], robust
 (sum of wgt is 8,035.83568177922)
@@ -3699,7 +4081,7 @@ West Virg..  |   .3406291   .1387908     2.45   0.014     .0685582       .6127
 
 . 
 . *************************************************************************
-. *ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, republicans, Table S8
+. *ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, republicans, Table S9
 . *************************************************************************
 . reg zgov_reduce_inequality_agree zprior_soc_over_self [pw=Weightvar] if repub
 > lican==1, robust
@@ -4248,7 +4630,7 @@ West Virg..  |   .4096467   .2095583     1.95   0.051     -.001249    .8205425
 
 . 
 . *************************************************************************
-. *ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, non-republicans, Table S9
+. *ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, non-republicans, Table S10
 . *************************************************************************
 . reg zgov_reduce_inequality_agree zprior_soc_over_self [pw=Weightvar] if repub
 > lican==0, robust
@@ -4797,7 +5179,7 @@ West Virg..  |  -.1157533   .1916614    -0.60   0.546    -.4915116    .2600049
 
 . 
 . *************************************************************************
-. *ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, republicans, Table S10
+. *ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, republicans, Table S11
 . *************************************************************************
 . reg zfed_univ_healthcare zprior_soc_over_self [pw=Weightvar] if republican==1
 > , robust
@@ -5345,7 +5727,7 @@ West Virg..  |   .4981549   .2432267     2.05   0.041     .0212433    .9750665
 
 . 
 . *************************************************************************
-. *ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, non-republicans, Table S11
+. *ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, non-republicans, Table S12
 . *************************************************************************
 . reg zfed_univ_healthcare zprior_soc_over_self [pw=Weightvar] if republican==0
 > , robust
@@ -5893,7 +6275,7 @@ West Virg..  |    .132868   .1872788     0.71   0.478     -.234298     .500034
 
 . 
 . *************************************************************************
-. *PRIMING EFFECTS, POLICY, Table S12
+. *PRIMING EFFECTS, POLICY, Table S13
 . *************************************************************************
 . reg zgov_reduce_inequality_agree corona_prime [pw=Weightvar], robust
 (sum of wgt is 8,035.83568177922)
@@ -6013,7 +6395,7 @@ high_confi~d |   .0395086   .0251664     1.57   0.116    -.0098249     .088842
 
 . 
 . *************************************************************************
-. *PRIMING EFFECT, HETEROGENEITY, REDISTRIBUTION, Table S13
+. *PRIMING EFFECT, HETEROGENEITY, REDISTRIBUTION, Table S14
 . *************************************************************************
 . reg zgov_reduce_inequality_agree corona_prime  republicanXcorona_prime republ
 > ican highinc higheduc female retirement_age high_confirmed child alone urban 
@@ -6361,7 +6743,7 @@ added scalar:
 
 . 
 . *************************************************************************
-. *PRIMING EFFECT, HETEROGENEITY, HEALTHCARE, Table S14
+. *PRIMING EFFECT, HETEROGENEITY, HEALTHCARE, Table S15
 . *************************************************************************
 . reg zfed_univ_healthcare corona_prime  republicanXcorona_prime republican hig
 > hinc higheduc female retirement_age high_confirmed child alone urban northeas
@@ -6708,7 +7090,7 @@ added scalar:
 
 . 
 . *****************************************
-. *Multiple hypothesis testing, Table S15
+. *Multiple hypothesis testing, Table S16
 . ********************************************
 . *Change of names because of STATA restrictions on variable length
 . gen znational=zprior_national_over_global
