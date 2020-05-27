@@ -199,7 +199,7 @@ Putting the graphs together
 ```{r}
 outcomes_hist <- solidarity_hist + nationalism_hist + luckunfair_hist + 
   redistribution_hist + plot_annotation(tag_levels = 'a')
-outcomes_hist
+outcomes_hist 
 ggsave(here::here("graphs","outcomes_hist.pdf"), width=16, height=10, units="cm")
 ```
 
@@ -517,7 +517,7 @@ gsol <- gdf %>% ggplot(aes(x=as.factor( treatment_grouped),
   scale_y_continuous(limits=c(-0.05,0.22)) +
   labs(y = "Treatment effect \u00B1 s.e.", x=element_blank(),
        title ="Solidarity", fill="Treatment by:") + 
-  geom_text(position = position_dodge(width=0.75),  size=3,
+  geom_text(position = position_dodge(width=0.75),  size=2,
             aes( y=-0.005, label=within_group_typed, hjust=1), angle=0) + coord_flip()
 gsol
 ```
@@ -538,7 +538,7 @@ glunfair <- all_estimates %>% filter(outcome=="luck_unfair") %>%
   scale_y_continuous(limits=c(-0.20,0.05)) +
   labs(y = "Treatment effect \u00B1 s.e.", x=element_blank(),
        title ="Fairness", fill="Treatment by:") + 
-  geom_text(position = position_dodge(width=0.75), size=3,
+  geom_text(position = position_dodge(width=0.75), size=2,
             aes( y=0.005, label=within_group_typed, hjust=0), angle=0) + coord_flip()
 glunfair
 ```
@@ -559,7 +559,7 @@ gnat <- all_estimates %>% filter(outcome=="nationalism") %>%
   scale_y_continuous(limits=c(-0.13,0.12)) +
   labs(y = "Treatment effect \u00B1 s.e.", x=element_blank(),
        title ="Nationalism", fill="Treatment by:") + 
-  geom_text(position = position_dodge(width=0.75), size=3,
+  geom_text(position = position_dodge(width=0.75), size=2,
             aes( y=0.06, label=within_group_typed, hjust=0), angle=0) + coord_flip()
 gnat
 ```
@@ -567,10 +567,10 @@ gnat
 Putting them all together. This looks bad in the knitr-pdf, but ok with the larger graph
 saved to disk.
 ```{r}
-tgraphs <- gsol + gnat + glunfair +  plot_layout(ncol=1, guides = 'collect') +
+tgraphs <- gsol + gnat + glunfair +  plot_layout(ncol=2, guides = 'collect') + guide_area() +
   plot_annotation(tag_levels = 'a')
 tgraphs
-ggsave(here::here("graphs","treatment_effects.pdf"), width=16, height=20, units="cm")
+ggsave(here::here("graphs","treatment_effects.pdf"), width=17.8, height=11, units="cm")
 ```
 
 # Treatment effects on policy preferences
