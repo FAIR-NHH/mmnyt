@@ -826,6 +826,136 @@ ggsave(here::here("graphs","landscape_graph.pdf"), width=16, height=10, units="c
   
 ```
 
+# Revision: What about distribution of outcomes? 
+
+Reviewer 1 is interested in distributional effects:
+
+> Is it possible to also conduct tests on the distribution of stated preferences? E.g. is it individuals with more/less extreme views who are more likely to be shifted?
+
+One way to do this is to ask: What is the effect on $P(X>t)$, letting $t$ vary
+from the lowest to the next-to highest level. 
+
+
+
+```{r}
+
+ipsos_lt <- ipsos %>%
+  mutate(sol_l0 = solidarity>0,
+         sol_l1 = solidarity>1,
+         sol_l2 = solidarity>2,
+         sol_l3 = solidarity>3,
+         sol_l4 = solidarity>4,
+         sol_l5 = solidarity>5,
+         sol_l6 = solidarity>6,
+         sol_l7 = solidarity>7,
+         sol_l8 = solidarity>8,
+         sol_l9 = solidarity>9,
+         luck_l1 = luck_unfair_agree>1,
+         luck_l2 = luck_unfair_agree>2,
+         luck_l3 = luck_unfair_agree>3,
+         luck_l4 = luck_unfair_agree>4)
+sol_l0 <- ipsos_lt %>% lm( sol_l0 ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)        
+sol_l1 <- ipsos_lt %>% lm( sol_l1 ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)        
+sol_l2 <- ipsos_lt %>% lm( sol_l2 ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)        
+sol_l3 <- ipsos_lt %>% lm( sol_l3 ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)        
+sol_l4 <- ipsos_lt %>% lm( sol_l4 ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)        
+sol_l5 <- ipsos_lt %>% lm( sol_l5 ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)        
+sol_l6 <- ipsos_lt %>% lm( sol_l6 ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)        
+sol_l7 <- ipsos_lt %>% lm( sol_l7 ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)        
+sol_l8 <- ipsos_lt %>% lm( sol_l8 ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)        
+sol_l9 <- ipsos_lt %>% lm( sol_l9 ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+luck_l1 <- ipsos_lt %>% lm( luck_l1 ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+luck_l2 <- ipsos_lt %>% lm( luck_l2 ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+luck_l3 <- ipsos_lt %>% lm( luck_l3 ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+luck_l4 <- ipsos_lt %>% lm( luck_l4 ~ corona_prime + retirement_age + female + highinc + republican + higheduc +
+                     child + alone + urban + high_confirmed +
+                     northeast + midwest + south, data=., weights=Weightvar)
+```
+
+Having collected the regression effects, it is time to collect the coefficients and standard
+errors in a dataset.
+```{r}
+distrib_effects <- tibble(outcome = c( rep("Solidarity",10), rep("Luck unfair",4)),
+                          reference_value = c( seq.int(0,9,1), c(seq.int(1,4,1))),
+                          treatment_effect = c( coef(sol_l0)[['corona_prime']],
+                                                coef(sol_l1)[['corona_prime']],
+                                                coef(sol_l2)[['corona_prime']],
+                                                coef(sol_l3)[['corona_prime']],
+                                                coef(sol_l4)[['corona_prime']],
+                                                coef(sol_l5)[['corona_prime']],
+                                                coef(sol_l6)[['corona_prime']],
+                                                coef(sol_l7)[['corona_prime']],
+                                                coef(sol_l8)[['corona_prime']],
+                                                coef(sol_l9)[['corona_prime']],
+                                                coef(luck_l1)[['corona_prime']],
+                                                coef(luck_l2)[['corona_prime']],
+                                                coef(luck_l3)[['corona_prime']],
+                                                coef(luck_l4)[['corona_prime']]),
+                          se = c( sqrt(vcov(sol_l0)['corona_prime','corona_prime']),
+                                  sqrt(vcov(sol_l1)['corona_prime','corona_prime']),
+                                  sqrt(vcov(sol_l2)['corona_prime','corona_prime']),
+                                  sqrt(vcov(sol_l3)['corona_prime','corona_prime']),
+                                  sqrt(vcov(sol_l4)['corona_prime','corona_prime']),
+                                  sqrt(vcov(sol_l5)['corona_prime','corona_prime']),
+                                  sqrt(vcov(sol_l6)['corona_prime','corona_prime']),
+                                  sqrt(vcov(sol_l7)['corona_prime','corona_prime']),
+                                  sqrt(vcov(sol_l8)['corona_prime','corona_prime']),
+                                  sqrt(vcov(sol_l9)['corona_prime','corona_prime']),
+                                  sqrt(vcov(luck_l1)['corona_prime','corona_prime']),
+                                  sqrt(vcov(luck_l2)['corona_prime','corona_prime']),
+                                  sqrt(vcov(luck_l3)['corona_prime','corona_prime']),
+                                  sqrt(vcov(luck_l4)['corona_prime','corona_prime'])))
+```
+
+Having collected these coefficients in a dataset, it is time to make plots:
+```{r}
+distrib_effects_fig <- distrib_effects %>% 
+  mutate(outcomef = factor(outcome, levels=c("Solidarity", "Luck unfair"))) %>%
+  ggplot(aes(y=treatment_effect, 
+                               x=reference_value,
+                               ymin=treatment_effect-se,
+                               ymax=treatment_effect+se)) +
+  geom_point() + 
+  geom_errorbar() +
+  theme_minimal() +
+  scale_x_continuous(breaks=seq(0,9,1)) +
+  facet_wrap(. ~ outcomef, scales="free_x") +
+  labs(y = "Treatment effect on Prob( Y > X), \u00B1 s.e.",
+       x = "Refererence (X)")
+distrib_effects_fig
+ggsave(here::here("graphs","distributional_effects.pdf"),  width=16, height=10, units="cm")
+```
+
+
+
+
+
 # sessionInfo()
 
 ```{r}
