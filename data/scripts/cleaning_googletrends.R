@@ -12,7 +12,7 @@ google_trends <- virus %>%
   rename(Virus = virus_united_states,
          Corona = corona_united_states,
          Covid = covid_united_states) %>%
-  mutate(Covid = ifelse(Virus %in% c("0","<1"), "0", Virus),
+  mutate(Covid = ifelse(Covid %in% c("0","<1"), "0", Covid),
          Covid = as.numeric(Covid)) %>%
   pivot_longer(Virus:Covid, names_to="search_term", values_to="searches")
 
