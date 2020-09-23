@@ -76,6 +76,12 @@ population <- read_csv(url("https://www2.census.gov/programs-surveys/popest/data
   filter(state != "United States")
 ```
 
+We want to compare our data collection period with the Google-searches for relevant terms
+over time:
+```{r}
+google_trends <- readRDS(here::here("data","googletrends.rds"))
+```
+
 
 # Merging outcomes
 Restricting the set of regions to the states and DC, not the other
@@ -105,6 +111,25 @@ survey_period <- long_data %>% ggplot(aes(x=cdate, y=confirmed_by_100_000,
   labs(y="# Confirmed / 100,000", 
        x=element_blank())
 survey_period       
+```
+
+# Google searches and survey period
+
+```{r}
+survey_period2 <- google_trends %>% 
+  ggplot(aes(x=day, y=searches, group=search_term)) +
+  geom_rect(aes(xmin=as.Date("2020-03-24"),
+                xmax=as.Date("2020-04-02"), 
+                ymin=0, 
+                ymax=Inf
+                ), fill="grey80") +
+  geom_line(aes(linetype=search_term), size=0.8) +
+  theme_minimal() +
+  labs(y="# searches (index)",
+       x=element_blank(),
+       linetype="Search term:") +
+  theme(legend.position = c(0.15, 0.84))
+survey_period2
 ```
 
 
@@ -151,8 +176,8 @@ Now a version that combines the Covid-19 data with survey period and
 the extent to which they are affected.
 
 ```{r}
-survey_period + p1 + plot_annotation(tag_levels = "a")
-ggsave(here::here("graphs","survey_period.pdf"), width=16, height=10, units="cm")
+(survey_period | p1)  /  survey_period2 + plot_annotation(tag_levels = "a")
+ggsave(here::here("graphs","survey_period.pdf"), width=16, height=14, units="cm")
 ```
 
 # sessionInfo()
