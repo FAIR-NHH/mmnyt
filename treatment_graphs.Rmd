@@ -153,7 +153,20 @@ solidarity_hist <- solidarity_hist_df  %>%
   labs(x=element_blank(),
        y="Proportion",
        title="Solidarity")
+compassion_hist_df <- ipsos %>%
+  summarise(weighted.bars(compassion_agree, Weightvar, na.rm=TRUE))
+compassion_hist_df %>% knitr::kable(digits=3)
+compassion_hist <- compassion_hist_df  %>%
+  ggplot(aes(x=v, y=proportion)) + 
+  geom_bar(stat='identity') +
+  theme_minimal() +
+  scale_x_continuous(breaks=1:5) +
+  labs(x=element_blank(),
+       y="Proportion",
+       title="Compassion")
 ```
+
+Support for nationalism and "no borders"
 
 ```{r}
 nationalism_hist_df <- ipsos %>% 
@@ -167,6 +180,17 @@ nationalism_hist <- nationalism_hist_df %>%
   labs(x=element_blank(),
        y="Proportion",
        title="Nationalism")
+noborders_hist_df <- ipsos %>% 
+  summarize(weighted.bars(6-noborders_agree, Weightvar, na.rm=TRUE))
+noborders_hist_df %>% knitr::kable(digits=3)
+noborders_hist <- noborders_hist_df %>%
+  ggplot(aes(x=v, y=proportion)) + 
+  geom_bar(stat='identity') +
+  theme_minimal() +
+  scale_x_continuous(breaks=1:5) +
+  labs(x=element_blank(),
+       y="Proportion",
+       title="Borders")
 ```
 
 ```{r}
@@ -180,6 +204,16 @@ luckunfair_hist <- luckunfair_hist_df %>%
   labs(x=element_blank(),
        y="Proportion",
        title="Luck unfair")
+luckdetermine_hist_df <- ipsos %>%
+  summarise(weighted.bars(luck_determ_agree, Weightvar, na.rm=TRUE))
+luckdetermine_hist_df %>% knitr::kable(digits=3)
+luckdetermine_hist <- luckdetermine_hist_df %>%
+  ggplot(aes(x=v, y=proportion)) + 
+  geom_bar(stat='identity') +
+  theme_minimal() +
+  labs(x=element_blank(),
+       y="Proportion",
+       title="Luck-determination")
 ```
 
 ```{r}
@@ -193,12 +227,15 @@ redistribution_hist <- redistribution_hist_df %>%
   labs(x=element_blank(),
        y="Proportion",
        title="Redistribution")
+redistribution_hist
+ggsave(here::here("graphs", "redistribution.pdf"), widt = 16, height = 10, units = "cm")
 ```
 
 Putting the graphs together
 ```{r}
-outcomes_hist <- solidarity_hist + nationalism_hist + luckunfair_hist + 
-  redistribution_hist + plot_annotation(tag_levels = 'a')
+outcomes_hist <- solidarity_hist + nationalism_hist + luckunfair_hist +
+  compassion_hist + noborders_hist + luckdetermine_hist + 
+  plot_annotation(tag_levels = 'a')
 outcomes_hist 
 ggsave(here::here("graphs","outcomes_hist.pdf"), width=16, height=10, units="cm")
 ```
