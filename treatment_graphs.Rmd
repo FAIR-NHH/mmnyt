@@ -953,6 +953,77 @@ ggsave(here::here("graphs","distributional_effects.pdf"),  width=16, height=10, 
 ```
 
 
+# Treatment effects in more and less affected areas
+Referee 1 suggests looking at treatment effects broken down by heterogeneity
+in degree of affectedness (answer to the priming questions). 
+
+> In addition, it might be possible to see whether the treatment effect tends to be stronger/weaker among individuals who (realistically) believe that the crisis will last for a long time?
+
+and:
+
+> One key aspect that is being discussed relatively little is whether individuals think that they might be personally affected by this crisis (that they will become sick/unemployed etc.).
+
+We cannot look at this at the individual level, but we can ask if there treatment differences between 
+*states* that are different in the average responses to the priming questions. We look at the heterogeneity
+by the objective number of confirmed cases in the state above (the `tgraphs` graph).
+
+I create a dataset of state averages, and then define high as above median (at the state level).
+For the priming about number of weeks, I impute 53 weeks to those who think it will last longer than a year.
+```{r}
+state_averages <- ipsos %>% group_by(state) %>%
+  summarize(mean_affected = weighted.mean(prime_affected, Weightvar, na.rm=TRUE),
+            mean_weeks = weighted.mean(prime_weeks, Weightvar, na.rm=TRUE),
+            confirmed_casesp = weighted.mean(confirmed_cases, Weightvar,)) %>%
+  mutate(many_affected = mean_affected>median(mean_affected),
+         expecting_long = mean_weeks>median(mean_weeks))
+```
+How correlated are these measures?
+```{r}
+with(state_averages, table(many_affected, expecting_long))
+```
+These are not particularly correlated measures.
+
+Now, we can join these averages back into the ipsos dataset and look at interactions between
+the treatment effects and the measures of high degree of being affected.
+
+```{r}
+ipsos_with_avg <- ipsos %>% left_join(state_averages, by="state") %>%
+  mutate( prime_expecting_long = corona_prime * expecting_long,
+          prime_many_affected = corona_prime * many_affected)
+```
+
+We can run the regressions in the standard formulations as before with these
+interactions:
+
+```{r}
+severe1 <- ipsos_with_avg %>% lm( zsolidarity ~ corona_prime + prime_expecting_long + expecting_long +
+                                    retirement_age + female + highinc + republican + higheduc +
+                                    child + alone + urban + high_confirmed +
+                                    northeast + midwest + south, data=., weights=Weightvar)        
+severe2 <- ipsos_with_avg %>% lm( zsolidarity ~ corona_prime + prime_many_affected + many_affected +
+                                    retirement_age + female + highinc + republican + higheduc +
+                                    child + alone + urban + high_confirmed +
+                                    northeast + midwest + south, data=., weights=Weightvar)        
+severe3 <- ipsos_with_avg %>% lm( zluck_unfair ~ corona_prime + prime_expecting_long + expecting_long +
+                                    retirement_age + female + highinc + republican + higheduc +
+                                    child + alone + urban + high_confirmed +
+                                    northeast + midwest + south, data=., weights=Weightvar)        
+severe4 <- ipsos_with_avg %>% lm( zluck_unfair ~ corona_prime + prime_many_affected + many_affected +
+                                    retirement_age + female + highinc + republican + higheduc +
+                                    child + alone + urban + high_confirmed +
+                                    northeast + midwest + south, data=., weights=Weightvar)
+```
+
+We can output to a table:
+```{r}
+stargazer(severe1, severe2, severe3, severe4, 
+          se = list(
+            sqrt(diag(vcovHC(severe1, type = "HC1"))),
+            sqrt(diag(vcovHC(severe2, type = "HC1"))),
+            sqrt(diag(vcovHC(severe3, type = "HC1"))),
+            sqrt(diag(vcovHC(severe4, type = "HC1")))),
+          style="aer",type="text", df=FALSE, keep.stat=c("rsq","n"))
+```
 
 
 
