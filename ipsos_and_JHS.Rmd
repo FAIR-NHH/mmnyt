@@ -172,6 +172,20 @@ p1 <- primes %>% ggplot(aes(x=confirmed_by_100_000, y=mean_affected)) +
 p1
 ```
 
+```{r}
+p2 <- primes %>% ggplot(aes(x=confirmed_by_100_000, y=mean_estlength)) + 
+  scale_x_log10() + 
+  geom_smooth(method='lm', color='black') + 
+  geom_point(aes(size=pop2019), alpha=0.4) +
+  theme_minimal() +
+  labs(x="# Confirmed / 100,000 (March 28)",
+       y="Mean expected length of crisis") + 
+  theme(legend.position = "none")
+p2
+ggsave(here::here("graphs","expected_length_vs_objective.pdf"), width=16, height=10, units="cm")
+```
+
+
 Now a version that combines the Covid-19 data with survey period and 
 the extent to which they are affected.
 
