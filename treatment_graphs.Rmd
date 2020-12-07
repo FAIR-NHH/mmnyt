@@ -195,7 +195,7 @@ noborders_hist <- noborders_hist_df %>%
   scale_x_continuous(breaks=1:5) +
   labs(x=element_blank(),
        y="Proportion",
-       title="Borders")
+       title="No borders")
 ```
 
 ```{r}
@@ -218,7 +218,7 @@ luckdetermine_hist <- luckdetermine_hist_df %>%
   theme_minimal() +
   labs(x=element_blank(),
        y="Proportion",
-       title="Luck-determination")
+       title="Luck belief")
 ```
 
 ```{r}
