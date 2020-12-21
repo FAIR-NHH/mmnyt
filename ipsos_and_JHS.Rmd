@@ -190,7 +190,7 @@ Now a version that combines the Covid-19 data with survey period and
 the extent to which they are affected.
 
 ```{r}
-(survey_period | p1)  /  survey_period2 + plot_annotation(tag_levels = "a")
+survey_period2 / (survey_period | p1)   + plot_annotation(tag_levels = "a")
 ggsave(here::here("graphs","survey_period.pdf"), width=16, height=14, units="cm")
 ```
 
