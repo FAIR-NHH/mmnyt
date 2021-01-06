@@ -9,18 +9,11 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(tmap)
-library(spData)
 library(tidyverse)
 library(haven)
 library(lubridate)
-library(fastDummies)
-library(reldist)
 library(patchwork)
-library(sjlabelled)
 source("functions.R")
-data(us_states)
-data(us_states_df)
 Sys.setlocale("LC_TIME", "en_US.UTF-8")
 ```
 
@@ -85,7 +78,7 @@ google_trends <- readRDS(here::here("data","googletrends.rds"))
 
 # Merging outcomes
 Restricting the set of regions to the states and DC, not the other
-territories as well
+territories as wellg
 ```{r}
 US_covid_outcomes <- confirmed_long 
 long_data <- US_covid_outcomes %>% rename(state = Province_State) %>%
