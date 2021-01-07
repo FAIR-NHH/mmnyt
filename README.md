@@ -35,4 +35,9 @@ procedure was kindly made available by Michael Wolf (`Adjust.Rdata`
 and `Wolf-ReadMe.txt`), [at his website](https://www.econ.uzh.ch/dam/jcr:41da043f-96a2-43b9-9264-da24e6b66dc0/Adjust_R_code.zip).
 
 
+## mTurk supplement
+For a revision, we conducted a supplementary data collection on mTurk,
+the data and analysis is kept apart in separate files, the analysis
+is in the Stata dofile `mturklab_analysis.do` outputting `tables/mturklab_indic.tex` 
+based on data in the `data/processed` directory.
 
