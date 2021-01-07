@@ -180,7 +180,13 @@ sum high_confirmed, detail
 restore
 
 *************************************************************************
-*PRIMING EFFECTS, MAIN OUTCOMES, Table S2
+*Balance testing
+*************************************************************************
+reg corona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south
+test republican=highinc=higheduc=female=retirement_age=high_confirmed=child=alone=urban=northeast=midwest=south
+
+*************************************************************************
+*PRIMING EFFECTS, MAIN OUTCOMES, Table S3
 *************************************************************************
 
 reg zprior_soc_over_self corona_prime [pw=Weightvar], robust
@@ -205,7 +211,7 @@ label mtitle("Solidarity (std.)"  "Solidarity (std.)"  "Nationalism (std.)" "Nat
 b(3)
 
 *************************************************************************
-*PRIMING EFFECT, HETEROGENEITY, SOLIDARITY, Table S3
+*PRIMING EFFECT, HETEROGENEITY, SOLIDARITY, Table S4
 *************************************************************************
 
 reg zprior_soc_over_self corona_prime republicanXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
@@ -251,7 +257,7 @@ label mtitle("Solidarity (std.)" "Solidarity (std.)" "Solidarity (std.)" "Solida
 b(3)
 
 *************************************************************************
-*PRIMING EFFECT, HETEROGENEITY, NATIONALISM, Table S4
+*PRIMING EFFECT, HETEROGENEITY, NATIONALISM, Table S5
 *************************************************************************
 reg zprior_national_over_global corona_prime  republicanXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
 lincom corona_prime +  republicanXcorona_prime
@@ -296,7 +302,7 @@ label mtitle("Nationalism (std.)" "Nationalism (std.)" "Nationalism (std.)" "Nat
 b(3)
 
 *************************************************************************
-*PRIMING EFFECT, HETEROGENEITY, LUCK UNFAIR, Table S5
+*PRIMING EFFECT, HETEROGENEITY, LUCK UNFAIR, Table S6
 *************************************************************************
 reg zluck_unfair_agree corona_prime republicanXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
 lincom corona_prime + republicanXcorona_prime
@@ -341,7 +347,7 @@ label mtitle("Luck unfair (std.)" "Luck unfair (std.)" "Luck unfair (std.)" "Luc
 b(3)
 
 *************************************************************************
-*PRIMING EFFECT, HETEROGENEITY, LUCK BELIEF, Table S6
+*PRIMING EFFECT, HETEROGENEITY, LUCK BELIEF, Table S7
 *************************************************************************
 reg zluck_determ_agree corona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
 est store col1
@@ -390,7 +396,7 @@ b(3)
 
 
 *************************************************************************
-*ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, Table S7
+*ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, Table S8
 *************************************************************************
 reg zgov_reduce_inequality_agree zprior_soc_over_self [pw=Weightvar], robust
 est store col1
@@ -420,7 +426,7 @@ label mtitle("Redistribution (std.)" "Redistribution (std.)" "Redistribution (st
 b(3)
 
 *************************************************************************
-*ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, Table S8
+*ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, Table S9
 *************************************************************************
 reg zfed_univ_healthcare zprior_soc_over_self [pw=Weightvar], robust
 est store col1
@@ -450,7 +456,7 @@ label mtitle("Health care (std.)"  "Health care (std.)" "Health care (std.)" "He
 b(3)
 
 *************************************************************************
-*ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, republicans, Table S9
+*ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, republicans, Table S10
 *************************************************************************
 reg zgov_reduce_inequality_agree zprior_soc_over_self [pw=Weightvar] if republican==1, robust
 est store col1
@@ -480,7 +486,7 @@ label mtitle("Redistribution (std.)" "Redistribution (std.)" "Redistribution (st
 b(3)
 
 *************************************************************************
-*ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, non-republicans, Table S10
+*ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, non-republicans, Table S11
 *************************************************************************
 reg zgov_reduce_inequality_agree zprior_soc_over_self [pw=Weightvar] if republican==0, robust
 est store col1
@@ -510,7 +516,7 @@ label mtitle("Redistribution (std.)" "Redistribution (std.)" "Redistribution (st
 b(3)
 
 *************************************************************************
-*ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, republicans, Table S11
+*ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, republicans, Table S12
 *************************************************************************
 reg zfed_univ_healthcare zprior_soc_over_self [pw=Weightvar] if republican==1, robust
 est store col1
@@ -540,7 +546,7 @@ label mtitle("Health care (std.)"  "Health care (std.)" "Health care (std.)" "He
 b(3)
 
 *************************************************************************
-*ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, non-republicans, Table S12
+*ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, non-republicans, Table S13
 *************************************************************************
 reg zfed_univ_healthcare zprior_soc_over_self [pw=Weightvar] if republican==0, robust
 est store col1
@@ -570,7 +576,7 @@ label mtitle("Health care (std.)"  "Health care (std.)" "Health care (std.)" "He
 b(3)
 
 *************************************************************************
-*PRIMING EFFECTS, POLICY, Table S13
+*PRIMING EFFECTS, POLICY, Table S14
 *************************************************************************
 reg zgov_reduce_inequality_agree corona_prime [pw=Weightvar], robust
 est store col1
@@ -589,7 +595,7 @@ label mtitle("Redistr. (std.)" "Redistr (std.)" "Healthcare (std.)"  "Healthcare
 b(3)
 
 *************************************************************************
-*PRIMING EFFECT, HETEROGENEITY, REDISTRIBUTION, Table S14
+*PRIMING EFFECT, HETEROGENEITY, REDISTRIBUTION, Table S15
 *************************************************************************
 reg zgov_reduce_inequality_agree corona_prime  republicanXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
 lincom corona_prime +  republicanXcorona_prime
@@ -634,7 +640,7 @@ label mtitle("Redistribution (std.)" "Redistribution (std.)" "Redistribution (st
 b(3)
 
 *************************************************************************
-*PRIMING EFFECT, HETEROGENEITY, HEALTHCARE, Table S15
+*PRIMING EFFECT, HETEROGENEITY, HEALTHCARE, Table S16
 *************************************************************************
 reg zfed_univ_healthcare corona_prime  republicanXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
 lincom corona_prime +  republicanXcorona_prime
@@ -679,7 +685,7 @@ label mtitle("Health care (std.)" "Health care (std.)" "Health care (std.)" "Hea
 b(3)
 
 *****************************************
-*Multiple hypothesis testing, Table S16
+*Multiple hypothesis testing, Table S18
 ********************************************
 *Change of names because of STATA restrictions on variable length
 gen znational=zprior_national_over_global

@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  /home/sameos/Documents/gits/mmnyt/supplementary_information_A.log
   log type:  text
- opened on:  27 May 2020, 10:47:18
+ opened on:   7 Jan 2021, 14:00:55
 
 . 
 . /*
@@ -18,7 +18,7 @@
 . tempfile coronastat
 
 . save `coronastat'
-file /tmp/St01278.000001 saved
+file /tmp/St664734.000001 saved
 
 . use data/processed/ipsos_mmnyt_processed_release, clear
 
@@ -1387,7 +1387,57 @@ income_imp~d |      8,116     70114.9    59114.03       2500     375000
 
 . 
 . *************************************************************************
-. *PRIMING EFFECTS, MAIN OUTCOMES, Table S2
+. *Balance testing
+. *************************************************************************
+. reg corona_prime republican highinc higheduc female retirement_age high_confi
+> rmed child alone urban northeast midwest south
+
+      Source |       SS           df       MS      Number of obs   =     7,239
+-------------+----------------------------------   F(12, 7226)     =      0.47
+       Model |  1.41182376        12   .11765198   Prob > F        =    0.9330
+    Residual |  1808.27432     7,226  .250245547   R-squared       =    0.0008
+-------------+----------------------------------   Adj R-squared   =   -0.0009
+       Total |  1809.68614     7,238  .250025718   Root MSE        =    .50025
+
+------------------------------------------------------------------------------
+corona_prime |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+  republican |   .0128244   .0121785     1.05   0.292     -.011049    .0366979
+     highinc |   -.021025   .0131995    -1.59   0.111       -.0469    .0048499
+    higheduc |   .0141534    .012718     1.11   0.266    -.0107776    .0390844
+      female |   .0080945   .0119059     0.68   0.497    -.0152446    .0314335
+retiremen~ge |   -.001176   .0154877    -0.08   0.939    -.0315364    .0291843
+high_confi~d |   .0029393   .0132561     0.22   0.825    -.0230465    .0289252
+       child |   .0110669   .0147173     0.75   0.452    -.0177832    .0399171
+       alone |  -.0019775   .0155504    -0.13   0.899    -.0324608    .0285058
+       urban |   .0017787   .0140512     0.13   0.899    -.0257658    .0293232
+   northeast |  -.0165662   .0202147    -0.82   0.413    -.0561929    .0230606
+     midwest |  -.0053594    .017883    -0.30   0.764    -.0404154    .0296966
+       south |  -.0076115   .0161701    -0.47   0.638    -.0393096    .0240867
+       _cons |   .4919885   .0210226    23.40   0.000     .4507781    .5331989
+------------------------------------------------------------------------------
+
+. test republican=highinc=higheduc=female=retirement_age=high_confirmed=child=a
+> lone=urban=northeast=midwest=south
+
+ ( 1)  republican - highinc = 0
+ ( 2)  republican - higheduc = 0
+ ( 3)  republican - female = 0
+ ( 4)  republican - retirement_age = 0
+ ( 5)  republican - high_confirmed = 0
+ ( 6)  republican - child = 0
+ ( 7)  republican - alone = 0
+ ( 8)  republican - urban = 0
+ ( 9)  republican - northeast = 0
+ (10)  republican - midwest = 0
+ (11)  republican - south = 0
+
+       F( 11,  7226) =    0.51
+            Prob > F =    0.8996
+
+. 
+. *************************************************************************
+. *PRIMING EFFECTS, MAIN OUTCOMES, Table S3
 . *************************************************************************
 . 
 . reg zprior_soc_over_self corona_prime [pw=Weightvar], robust
@@ -1561,7 +1611,7 @@ high_confi~d |  -.0078669   .0288346    -0.27   0.785     -.064391    .0486573
 
 . 
 . *************************************************************************
-. *PRIMING EFFECT, HETEROGENEITY, SOLIDARITY, Table S3
+. *PRIMING EFFECT, HETEROGENEITY, SOLIDARITY, Table S4
 . *************************************************************************
 . 
 . reg zprior_soc_over_self corona_prime republicanXcorona_prime republican high
@@ -1908,7 +1958,7 @@ added scalar:
 
 . 
 . *************************************************************************
-. *PRIMING EFFECT, HETEROGENEITY, NATIONALISM, Table S4
+. *PRIMING EFFECT, HETEROGENEITY, NATIONALISM, Table S5
 . *************************************************************************
 . reg zprior_national_over_global corona_prime  republicanXcorona_prime republi
 > can highinc higheduc female retirement_age high_confirmed child alone urban n
@@ -2255,7 +2305,7 @@ added scalar:
 
 . 
 . *************************************************************************
-. *PRIMING EFFECT, HETEROGENEITY, LUCK UNFAIR, Table S5
+. *PRIMING EFFECT, HETEROGENEITY, LUCK UNFAIR, Table S6
 . *************************************************************************
 . reg zluck_unfair_agree corona_prime republicanXcorona_prime republican highin
 > c higheduc female retirement_age high_confirmed child alone urban northeast m
@@ -2601,7 +2651,7 @@ added scalar:
 
 . 
 . *************************************************************************
-. *PRIMING EFFECT, HETEROGENEITY, LUCK BELIEF, Table S6
+. *PRIMING EFFECT, HETEROGENEITY, LUCK BELIEF, Table S7
 . *************************************************************************
 . reg zluck_determ_agree corona_prime republican highinc higheduc female retire
 > ment_age high_confirmed child alone urban northeast midwest south [pw=Weightv
@@ -2983,7 +3033,7 @@ added scalar:
 . 
 . 
 . *************************************************************************
-. *ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, Table S7
+. *ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, Table S8
 . *************************************************************************
 . reg zgov_reduce_inequality_agree zprior_soc_over_self [pw=Weightvar], robust
 (sum of wgt is 8,035.83568177922)
@@ -3533,7 +3583,7 @@ West Virg..  |   .1388268   .1462584     0.95   0.343    -.1478828    .4255364
 
 . 
 . *************************************************************************
-. *ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, Table S8
+. *ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, Table S9
 . *************************************************************************
 . reg zfed_univ_healthcare zprior_soc_over_self [pw=Weightvar], robust
 (sum of wgt is 8,035.83568177922)
@@ -4081,7 +4131,7 @@ West Virg..  |   .3406291   .1387908     2.45   0.014     .0685582       .6127
 
 . 
 . *************************************************************************
-. *ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, republicans, Table S9
+. *ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, republicans, Table S10
 . *************************************************************************
 . reg zgov_reduce_inequality_agree zprior_soc_over_self [pw=Weightvar] if repub
 > lican==1, robust
@@ -4630,7 +4680,7 @@ West Virg..  |   .4096467   .2095583     1.95   0.051     -.001249    .8205425
 
 . 
 . *************************************************************************
-. *ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, non-republicans, Table S10
+. *ASSOCIATIONS, REDISTRIBUTION/MORAL VIEWS, non-republicans, Table S11
 . *************************************************************************
 . reg zgov_reduce_inequality_agree zprior_soc_over_self [pw=Weightvar] if repub
 > lican==0, robust
@@ -5179,7 +5229,7 @@ West Virg..  |  -.1157533   .1916614    -0.60   0.546    -.4915116    .2600049
 
 . 
 . *************************************************************************
-. *ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, republicans, Table S11
+. *ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, republicans, Table S12
 . *************************************************************************
 . reg zfed_univ_healthcare zprior_soc_over_self [pw=Weightvar] if republican==1
 > , robust
@@ -5727,7 +5777,7 @@ West Virg..  |   .4981549   .2432267     2.05   0.041     .0212433    .9750665
 
 . 
 . *************************************************************************
-. *ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, non-republicans, Table S12
+. *ASSOCIATIONS, HEALTH CARE/MORAL VIEWS, non-republicans, Table S13
 . *************************************************************************
 . reg zfed_univ_healthcare zprior_soc_over_self [pw=Weightvar] if republican==0
 > , robust
@@ -6275,7 +6325,7 @@ West Virg..  |    .132868   .1872788     0.71   0.478     -.234298     .500034
 
 . 
 . *************************************************************************
-. *PRIMING EFFECTS, POLICY, Table S13
+. *PRIMING EFFECTS, POLICY, Table S14
 . *************************************************************************
 . reg zgov_reduce_inequality_agree corona_prime [pw=Weightvar], robust
 (sum of wgt is 8,035.83568177922)
@@ -6395,7 +6445,7 @@ high_confi~d |   .0395086   .0251664     1.57   0.116    -.0098249     .088842
 
 . 
 . *************************************************************************
-. *PRIMING EFFECT, HETEROGENEITY, REDISTRIBUTION, Table S14
+. *PRIMING EFFECT, HETEROGENEITY, REDISTRIBUTION, Table S15
 . *************************************************************************
 . reg zgov_reduce_inequality_agree corona_prime  republicanXcorona_prime republ
 > ican highinc higheduc female retirement_age high_confirmed child alone urban 
@@ -6743,7 +6793,7 @@ added scalar:
 
 . 
 . *************************************************************************
-. *PRIMING EFFECT, HETEROGENEITY, HEALTHCARE, Table S15
+. *PRIMING EFFECT, HETEROGENEITY, HEALTHCARE, Table S16
 . *************************************************************************
 . reg zfed_univ_healthcare corona_prime  republicanXcorona_prime republican hig
 > hinc higheduc female retirement_age high_confirmed child alone urban northeas
@@ -7090,7 +7140,7 @@ added scalar:
 
 . 
 . *****************************************
-. *Multiple hypothesis testing, Table S16
+. *Multiple hypothesis testing, Table S18
 . ********************************************
 . *Change of names because of STATA restrictions on variable length
 . gen znational=zprior_national_over_global
