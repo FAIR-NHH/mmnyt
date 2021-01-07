@@ -1,0 +1,95 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /home/sameos/Documents/gits/mmnyt/data/scripts/mturklab_cleaning_re
+> lease.log
+  log type:  text
+ opened on:   7 Jan 2021, 12:14:33
+
+.         
+. *Loading data:  
+. use ../processed/mturklab_release.dta, clear
+
+. est clear
+
+. 
+. *Generating indicator for republican. "Do not prefer to answer" to missing.
+. gen republican=1
+
+. replace republican=0 if political>1
+(541 real changes made)
+
+. replace republican=. if political==4
+(19 real changes made, 19 to missing)
+
+. 
+. *"Do not prefer to answer" to missing. Imputing highest value (1.5)
+. replace income=. if income==25
+(4 real changes made, 4 to missing)
+
+. replace income=375000 if income==250000
+(3 real changes made)
+
+. 
+. *Indicators for educ (at least some college), age and income (latter two based
+>  on sample medians)
+. gen higheduc=1 if educ==4
+(674 missing values generated)
+
+. replace higheduc=0 if educ<4
+(674 real changes made)
+
+. label variable higheduc "High educ."
+
+. 
+. gen highage=1 if age>35
+(523 missing values generated)
+
+. replace highage=0 if age<36
+(523 real changes made)
+
+. replace highage=. if age==.
+(0 real changes made)
+
+. label variable highage "High age" 
+
+. 
+. gen highinc=1 if income>52500 
+(589 missing values generated)
+
+. replace highinc=0 if income<52501
+(589 real changes made)
+
+. replace highinc=. if income==.
+(4 real changes made, 4 to missing)
+
+. label variable highinc "High inc." 
+
+. 
+. *Flipping variables
+. gen priority_society=10-priority_self
+
+. gen agree_unfair=6-disagree_unfair
+
+. 
+. *Indicator for agreeing that luck inequality is unfair
+. gen agree=1 if agree_unfair>3
+(321 missing values generated)
+
+. replace agree=0 if agree_unfair<4
+(321 real changes made)
+
+. 
+. *Indicator for not prioritizing self over society.
+. gen societyfirst=1
+
+. replace societyfirst=0 if priority_society<5
+(777 real changes made)
+
+. 
+. save ../processed/mturklab_cleaned, replace
+file ../processed/mturklab_cleaned.dta saved
+
+. 
+end of do-file
+
+. exit, clear

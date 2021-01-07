@@ -1,0 +1,124 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /home/sameos/Documents/gits/mmnyt/mturklab_analysis.log
+  log type:  text
+ opened on:   7 Jan 2021, 12:11:31
+
+.         
+. *Loading data:  
+. use data/processed/mturklab_cleaned.dta, clear
+
+. est clear
+
+. 
+. ***************************************************
+. 
+. reg societyfirst republican highinc higheduc female highage, robust
+
+Linear regression                               Number of obs     =        984
+                                                F(5, 978)         =       7.53
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0352
+                                                Root MSE          =     .41115
+
+------------------------------------------------------------------------------
+             |               Robust
+societyfirst |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+  republican |  -.1267052   .0266722    -4.75   0.000    -.1790465    -.074364
+     highinc |   .0338201   .0266789     1.27   0.205    -.0185344    .0861746
+    higheduc |  -.0568754   .0274347    -2.07   0.038     -.110713   -.0030377
+      female |   .0360957   .0270486     1.33   0.182    -.0169843    .0891757
+     highage |  -.0002596   .0265939    -0.01   0.992    -.0524473    .0519281
+       _cons |   .2750098   .0289827     9.49   0.000     .2181343    .3318853
+------------------------------------------------------------------------------
+
+. est store col1
+
+. 
+. reg agree republican highinc higheduc female highage, robust
+
+Linear regression                               Number of obs     =        984
+                                                F(5, 978)         =       1.19
+                                                Prob > F          =     0.3097
+                                                R-squared         =     0.0060
+                                                Root MSE          =      .4625
+
+------------------------------------------------------------------------------
+             |               Robust
+       agree |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+  republican |  -.0672697    .030232    -2.23   0.026    -.1265967   -.0079428
+     highinc |   .0254536   .0298097     0.85   0.393    -.0330447    .0839518
+    higheduc |   .0259425   .0316583     0.82   0.413    -.0361834    .0880684
+      female |  -.0129541    .030354    -0.43   0.670    -.0725204    .0466123
+     highage |   .0050166   .0297268     0.17   0.866    -.0533191    .0633522
+       _cons |   .7053232   .0304301    23.18   0.000     .6456073    .7650391
+------------------------------------------------------------------------------
+
+. est store col2
+
+. 
+. reg share_self republican highinc higheduc female highage, robust
+
+Linear regression                               Number of obs     =        494
+                                                F(5, 488)         =       4.35
+                                                Prob > F          =     0.0007
+                                                R-squared         =     0.0385
+                                                Root MSE          =     43.532
+
+------------------------------------------------------------------------------
+             |               Robust
+  share_self |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+  republican |  -7.995157   4.069402    -1.96   0.050    -15.99087    .0005544
+     highinc |   11.03057   3.977448     2.77   0.006     3.215531    18.84561
+    higheduc |  -10.36368   4.213677    -2.46   0.014    -18.64287   -2.084495
+      female |  -4.218479    4.01087    -1.05   0.293    -12.09919    3.662228
+     highage |   .8770147   3.989218     0.22   0.826    -6.961148    8.715178
+       _cons |   136.6372   4.249864    32.15   0.000     128.2869    144.9874
+------------------------------------------------------------------------------
+
+. est store col3
+
+. 
+. reg share_self societyfirst agree republican highinc higheduc female highage, 
+> robust
+
+Linear regression                               Number of obs     =        494
+                                                F(7, 486)         =       3.72
+                                                Prob > F          =     0.0006
+                                                R-squared         =     0.0469
+                                                Root MSE          =      43.43
+
+------------------------------------------------------------------------------
+             |               Robust
+  share_self |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+societyfirst |  -4.321553    4.90237    -0.88   0.378    -13.95401    5.310904
+       agree |  -7.854372   4.158342    -1.89   0.060    -16.02492    .3161767
+  republican |  -9.046793   4.099621    -2.21   0.028    -17.10196   -.9916222
+     highinc |   11.91095   4.000675     2.98   0.003     4.050195     19.7717
+    higheduc |  -10.53643   4.236897    -2.49   0.013    -18.86132   -2.211529
+      female |  -4.321603   4.001923    -1.08   0.281    -12.18481    3.541604
+     highage |   .6754344   3.979822     0.17   0.865    -7.144347    8.495216
+       _cons |   143.2032    5.27025    27.17   0.000      132.848    153.5585
+------------------------------------------------------------------------------
+
+. est store col4
+
+. 
+. esttab col1 col2 col3 col4 using tables/mturklab_indic.tex, ///
+>         replace star(* 0.10 ** 0.05 *** 0.01) booktabs r2 se ///
+>         keep(societyfirst agree republican highinc higheduc highage female _co
+> ns) ///
+>         label mtitle("Solidarity" "Luck unfair" "Amount to self" "Amount to se
+> lf") ///
+>         b(3)
+(note: file tables/mturklab_indic.tex not found)
+(output written to tables/mturklab_indic.tex)
+
+. 
+end of do-file
+
+. exit, clear

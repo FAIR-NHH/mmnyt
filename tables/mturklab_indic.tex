@@ -1,0 +1,38 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{4}{c}}
+\toprule
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}\\
+                    &\multicolumn{1}{c}{Solidarity}&\multicolumn{1}{c}{Luck unfair}&\multicolumn{1}{c}{Amount to self}&\multicolumn{1}{c}{Amount to self}\\
+\midrule
+republican          &      -0.127\sym{***}&      -0.067\sym{**} &      -7.995\sym{*}  &      -9.047\sym{**} \\
+                    &     (0.027)         &     (0.030)         &     (4.069)         &     (4.100)         \\
+\addlinespace
+High inc.           &       0.034         &       0.025         &      11.031\sym{***}&      11.911\sym{***}\\
+                    &     (0.027)         &     (0.030)         &     (3.977)         &     (4.001)         \\
+\addlinespace
+High educ.          &      -0.057\sym{**} &       0.026         &     -10.364\sym{**} &     -10.536\sym{**} \\
+                    &     (0.027)         &     (0.032)         &     (4.214)         &     (4.237)         \\
+\addlinespace
+female              &       0.036         &      -0.013         &      -4.218         &      -4.322         \\
+                    &     (0.027)         &     (0.030)         &     (4.011)         &     (4.002)         \\
+\addlinespace
+High age            &      -0.000         &       0.005         &       0.877         &       0.675         \\
+                    &     (0.027)         &     (0.030)         &     (3.989)         &     (3.980)         \\
+\addlinespace
+societyfirst        &                     &                     &                     &      -4.322         \\
+                    &                     &                     &                     &     (4.902)         \\
+\addlinespace
+agree               &                     &                     &                     &      -7.854\sym{*}  \\
+                    &                     &                     &                     &     (4.158)         \\
+\addlinespace
+Constant            &       0.275\sym{***}&       0.705\sym{***}&     136.637\sym{***}&     143.203\sym{***}\\
+                    &     (0.029)         &     (0.030)         &     (4.250)         &     (5.270)         \\
+\midrule
+Observations        &         984         &         984         &         494         &         494         \\
+\(R^{2}\)           &       0.035         &       0.006         &       0.038         &       0.047         \\
+\bottomrule
+\multicolumn{5}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{5}{l}{\footnotesize \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)}\\
+\end{tabular}
+}
