@@ -171,7 +171,7 @@ compassion_hist <- compassion_hist_df  %>%
        title="Compassion")
 ```
 
-Support for nationalism and "no borders"
+Support for nationalism and "with borders"
 
 ```{r}
 nationalism_hist_df <- ipsos %>% 
@@ -185,17 +185,17 @@ nationalism_hist <- nationalism_hist_df %>%
   labs(x=element_blank(),
        y="Proportion",
        title="Nationalism")
-noborders_hist_df <- ipsos %>% 
+borders_hist_df <- ipsos %>% 
   summarize(weighted.bars(6-noborders_agree, Weightvar, na.rm=TRUE))
-noborders_hist_df %>% knitr::kable(digits=3)
-noborders_hist <- noborders_hist_df %>%
+borders_hist_df %>% knitr::kable(digits=3)
+borders_hist <- borders_hist_df %>%
   ggplot(aes(x=v, y=proportion)) + 
   geom_bar(stat='identity') +
   theme_minimal() +
   scale_x_continuous(breaks=1:5) +
   labs(x=element_blank(),
        y="Proportion",
-       title="No borders")
+       title="With borders")
 ```
 
 ```{r}
@@ -239,7 +239,7 @@ ggsave(here::here("graphs", "redistribution.pdf"), widt = 16, height = 10, units
 Putting the graphs together
 ```{r}
 outcomes_hist <- solidarity_hist + nationalism_hist + luckunfair_hist +
-  compassion_hist + noborders_hist + luckdetermine_hist + 
+  compassion_hist + borders_hist + luckdetermine_hist + 
   plot_annotation(tag_levels = 'a')
 outcomes_hist 
 ggsave(here::here("graphs","outcomes_hist.pdf"), width=16, height=10, units="cm")
@@ -286,7 +286,7 @@ ipsos %>% group_by(corona_prime) %>%
 I want to collect estimates in a dataset which is clear about
 
 - outcome (solidarity, unfair_luck, nationalism). String.
-- treatment_grouped (which group are we looking at hetereogeneity with respect to). String.
+- treatment_grouped (which group are we looking at heterogeneity with respect to). String.
 - within_group_type (male/female ; low/high ; ...) String.
 - estimate (numerical) 
 - Standard error (numerical)
