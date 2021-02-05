@@ -225,9 +225,9 @@ luckdetermine_hist <- luckdetermine_hist_df %>%
 redistribution_hist_df <- ipsos %>% 
   summarise(weighted.bars(redistribution, Weightvar, na.rm=TRUE)) %>%
   mutate( vf = fct_recode( factor(v),
-          "Generally disagree (1)" = "1",
-          "(2)" = "2",
-          "Generally agree (3)"="3"))
+          "Generally disagree" = "1",
+          "Neutral" = "2",
+          "Generally agree"="3"))
   
 redistribution_hist_df %>% knitr::kable(digits=3)
 redistribution_hist <- redistribution_hist_df %>%
