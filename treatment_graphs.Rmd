@@ -171,7 +171,7 @@ compassion_hist <- compassion_hist_df  %>%
        title="Compassion")
 ```
 
-Support for nationalism and "with borders"
+Support for nationalism and "no borders"
 
 ```{r}
 nationalism_hist_df <- ipsos %>% 
@@ -186,7 +186,7 @@ nationalism_hist <- nationalism_hist_df %>%
        y="Proportion",
        title="Nationalism")
 borders_hist_df <- ipsos %>% 
-  summarize(weighted.bars(6-noborders_agree, Weightvar, na.rm=TRUE))
+  summarize(weighted.bars(noborders_agree, Weightvar, na.rm=TRUE))
 borders_hist_df %>% knitr::kable(digits=3)
 borders_hist <- borders_hist_df %>%
   ggplot(aes(x=v, y=proportion)) + 
@@ -195,7 +195,7 @@ borders_hist <- borders_hist_df %>%
   scale_x_continuous(breaks=1:5) +
   labs(x=element_blank(),
        y="Proportion",
-       title="With borders")
+       title="No borders")
 ```
 
 ```{r}
@@ -223,10 +223,15 @@ luckdetermine_hist <- luckdetermine_hist_df %>%
 
 ```{r}
 redistribution_hist_df <- ipsos %>% 
-  summarise(weighted.bars(redistribution, Weightvar, na.rm=TRUE))
+  summarise(weighted.bars(redistribution, Weightvar, na.rm=TRUE)) %>%
+  mutate( vf = fct_recode( factor(v),
+          "Generally disagree (1)" = "1",
+          "(2)" = "2",
+          "Generally agree (3)"="3"))
+  
 redistribution_hist_df %>% knitr::kable(digits=3)
 redistribution_hist <- redistribution_hist_df %>%
-  ggplot(aes(x=v, y=proportion)) + 
+  ggplot(aes(x=vf, y=proportion)) + 
   geom_bar(stat='identity') +
   theme_minimal() +
   labs(x=element_blank(),
