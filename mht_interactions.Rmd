@@ -20,6 +20,21 @@ source("functions.R")
 load("Adjust.RData")
 ```
 
+
+The point of this file is to calculate Romano-Wolf corrected p-values for all
+the interaction effects for each of the 6 outcomes of Figure 1 in the main paper
+and for the two policy preferences (redistribution and health care). 
+
+Here is a global variable set with the number of bootstrap replications:
+```{r}
+NBOOTSTRAPS <- 9999
+```
+
+The simulations are written to be calculated on a powerful linux computer (hence the
+` parallel="multicore", ncpus=30` arguments given to `boot` in all the simulation functions. For running
+on a windows computer (or one less powerful), this should be modified or deleted (but this
+program will then run quite slowly). 
+
 # Reading data
 Reading data from Ipsos:
 ```{r message=FALSE, warning=FALSE}
@@ -36,21 +51,24 @@ wavedate_df <- tribble(~Wavemarker, ~wavedt,
   mutate(wavedt = as.Date(wavedt))
 
 ipsos <- haven::read_dta(here::here("data","processed", "ipsos_mmnyt_processed_release.dta")) %>%
- mutate( year=2020,
-         country="United States",
-         state = as.character(haven::as_factor(State_Recoded)),
-         solidarity = 10 - prior_self_over_soc,
-         zsolidarity = weighted.scale(solidarity, Weightvar, na.rm=TRUE),
-         znationalism = weighted.scale(prior_national_over_global, Weightvar, na.rm = TRUE),
-         zluck_unfair = weighted.scale(luck_unfair_agree, Weightvar, na.rm = TRUE),
-         redistribution = gov_reduce_inequality_agree,
-         zredistribution = weighted.scale(redistribution, Weightvar, na.rm = TRUE),
-         politics = as.character(haven::as_factor(GDW6)),
-         republican = as.numeric(ifelse(politics!="Prefer not to answer", 
+  mutate( year=2020,
+          country="United States",
+          state = as.character(haven::as_factor(State_Recoded)),
+          solidarity = 10 - prior_self_over_soc,
+          zsolidarity = weighted.scale(solidarity, Weightvar, na.rm=TRUE),
+          znationalism = weighted.scale(prior_national_over_global, Weightvar, na.rm = TRUE),
+          zluck_unfair = weighted.scale(luck_unfair_agree, Weightvar, na.rm = TRUE),
+          zcompassion = weighted.scale(compassion_agree, Weightvar, na.rm = TRUE),
+          znoborders = weighted.scale(noborders_agree, Weightvar, na.rm = TRUE),
+          zluck_belief = weighted.scale(luck_determ_agree, Weightvar, na.rm = TRUE),
+          redistribution = gov_reduce_inequality_agree,
+          zredistribution = weighted.scale(redistribution, Weightvar, na.rm = TRUE),
+          politics = as.character(haven::as_factor(GDW6)),
+          republican = as.numeric(ifelse(politics!="Prefer not to answer", 
                                          politics=="Republican",
                                          NA)),
-         female = as.numeric(resp_gender==2),
-         ) %>% left_join(wavedate_df) %>%
+          female = as.numeric(resp_gender==2),
+  ) %>% left_join(wavedate_df) %>%
   filter(!is.na(wavedt)) %>%
   filter(!is.na(corona_prime))
 ```
@@ -72,9 +90,8 @@ ipsos <- ipsos %>% mutate( high_confirmed =
                                                                        0.5, 
                                                                        weight = Weightvar)))
 wtd.quantile(ipsos$confirmed_cases, 0.5, weight=ipsos$Weightvar
-             )
+)
 ```
-
 # Romano-Wolf corrections, Luck Unfair
 
 I have Wolf's original `p.val.adj` code for doing the corrections. What I need is a function
@@ -82,7 +99,7 @@ that I can supply to R's `boot` command to return the relevant t-statistics on b
 data.
 
 ```{r}
-bs_luckunfair <- function(data, R=999, new_seed=431242412) {
+bs_luckunfair <- function(data, Rb=999, new_seed=431242412) {
   set.seed(new_seed)
   hdata <- data %>% mutate(Xpolitical = republican * corona_prime,
                            Xincome = highinc * corona_prime,
@@ -123,34 +140,34 @@ bs_luckunfair <- function(data, R=999, new_seed=431242412) {
     datab <- data[indices,]
     l1 <- datab %>% lm(zluck_unfair - enforce*Xpolitical*theta[['Xpolitical']] ~ 
                          corona_prime + Xpolitical + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l2 <- datab %>% lm(zluck_unfair - enforce*Xincome*theta[['Xincome']] ~ 
                          corona_prime + Xincome + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l3 <- datab %>% lm(zluck_unfair - enforce*Xeducation*theta[['Xeducation']] ~ 
                          corona_prime + Xeducation + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l4 <- datab %>% lm(zluck_unfair - enforce*Xgender*theta[['Xgender']] ~ 
                          corona_prime + Xgender + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l5 <- datab %>% lm(zluck_unfair - enforce*Xretirement*theta[['Xretirement']] ~ 
                          corona_prime + Xretirement + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l6 <- datab %>% lm(zluck_unfair - enforce*Xconfirmed*theta[['Xconfirmed']] ~ 
                          corona_prime + Xconfirmed + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     ret <- c(
       Xpolitical = coef(l1)[['Xpolitical']] / sqrt(diag(vcovHC(l1, type = "HC1")))[['Xpolitical']],
       Xincome =  coef(l2)[['Xincome']] / sqrt(diag(vcovHC(l2, type = "HC1")))[['Xincome']],
@@ -162,7 +179,7 @@ bs_luckunfair <- function(data, R=999, new_seed=431242412) {
     abs(ret)
   }
   t0 <- bsfn(hdata, 1:nrow(hdata), theta=actual_betas, enforce=0)
-  b_obj <- boot(hdata, bsfn, R=999, parallel="multicore", ncpus=30,  theta=actual_betas, enforce=1)
+  b_obj <- boot(hdata, bsfn, R=Rb, parallel="multicore", ncpus=30,  theta=actual_betas, enforce=1)
   p.val.adj(t0, b_obj$t)
 }
 ```
@@ -170,13 +187,13 @@ bs_luckunfair <- function(data, R=999, new_seed=431242412) {
 
 Now, for calculating the bootstrapped p-values and with the Romano-Wolf adjustment.
 ```{r}
-rw1 <- bs_luckunfair(ipsos)
-rw1
+rw1 <- bs_luckunfair(ipsos, Rb = NBOOTSTRAPS)
+rw1 %>% knitr::kable(digits=3)
 ```
 
 # Romano Wolf adjustment, Solidarity
 ```{r}
-bs_solidarity <- function(data, R=9999, new_seed=32432412) {
+bs_solidarity <- function(data, Rb=999, new_seed=32432412) {
   set.seed(new_seed)
   hdata <- data %>% mutate(Xpolitical = republican * corona_prime,
                            Xincome = highinc * corona_prime,
@@ -217,34 +234,34 @@ bs_solidarity <- function(data, R=9999, new_seed=32432412) {
     datab <- data[indices,]
     l1 <- datab %>% lm(zsolidarity - enforce*Xpolitical*theta[['Xpolitical']] ~ 
                          corona_prime + Xpolitical + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l2 <- datab %>% lm(zsolidarity - enforce*Xincome*theta[['Xincome']] ~ 
                          corona_prime + Xincome + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l3 <- datab %>% lm(zsolidarity - enforce*Xeducation*theta[['Xeducation']] ~ 
                          corona_prime + Xeducation + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l4 <- datab %>% lm(zsolidarity - enforce*Xgender*theta[['Xgender']] ~ 
                          corona_prime + Xgender + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l5 <- datab %>% lm(zsolidarity - enforce*Xretirement*theta[['Xretirement']] ~ 
                          corona_prime + Xretirement + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l6 <- datab %>% lm(zsolidarity - enforce*Xconfirmed*theta[['Xconfirmed']] ~ 
                          corona_prime + Xconfirmed + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     ret <- c(
       Xpolitical = coef(l1)[['Xpolitical']] / sqrt(diag(vcovHC(l1, type = "HC1")))[['Xpolitical']],
       Xincome =  coef(l2)[['Xincome']] / sqrt(diag(vcovHC(l2, type = "HC1")))[['Xincome']],
@@ -256,22 +273,20 @@ bs_solidarity <- function(data, R=9999, new_seed=32432412) {
     abs(ret)
   }
   t0 <- bsfn(hdata, 1:nrow(hdata), theta=actual_betas, enforce=0)
-  b_obj <- boot(hdata, bsfn, R=9999, parallel="multicore", ncpus=30, theta=actual_betas, enforce=1)
+  b_obj <- boot(hdata, bsfn, R=Rb, parallel="multicore", ncpus=30, theta=actual_betas, enforce=1)
   p.val.adj(t0, b_obj$t)
 }
 ```
 
-
-
 Now, for calculating the bootstrapped p-values and with the Romano-Wolf adjustment.
 ```{r}
-rw2 <- bs_solidarity(ipsos)
-rw2
+rw2 <- bs_solidarity(ipsos, Rb = NBOOTSTRAPS)
+rw2 %>% knitr::kable(digits=3)
 ```
 
 # Interaction effects on nationalism
 ```{r}
-bs_nationalism <- function(data, R=9999, new_seed=329172412) {
+bs_nationalism <- function(data, Rb=999, new_seed=329172412) {
   set.seed(new_seed)
   hdata <- data %>% mutate(Xpolitical = republican * corona_prime,
                            Xincome = highinc * corona_prime,
@@ -312,34 +327,34 @@ bs_nationalism <- function(data, R=9999, new_seed=329172412) {
     datab <- data[indices,]
     l1 <- datab %>% lm(znationalism - enforce*Xpolitical*theta[['Xpolitical']] ~ 
                          corona_prime + Xpolitical + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l2 <- datab %>% lm(znationalism - enforce*Xincome*theta[['Xincome']] ~ 
                          corona_prime + Xincome + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l3 <- datab %>% lm(znationalism - enforce*Xeducation*theta[['Xeducation']] ~ 
                          corona_prime + Xeducation + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l4 <- datab %>% lm(znationalism - enforce*Xgender*theta[['Xgender']] ~ 
                          corona_prime + Xgender + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l5 <- datab %>% lm(znationalism - enforce*Xretirement*theta[['Xretirement']] ~ 
                          corona_prime + Xretirement + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l6 <- datab %>% lm(znationalism - enforce*Xconfirmed*theta[['Xconfirmed']] ~ 
                          corona_prime + Xconfirmed + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     ret <- c(
       Xpolitical = coef(l1)[['Xpolitical']] / sqrt(diag(vcovHC(l1, type = "HC1")))[['Xpolitical']],
       Xincome =  coef(l2)[['Xincome']] / sqrt(diag(vcovHC(l2, type = "HC1")))[['Xincome']],
@@ -351,22 +366,310 @@ bs_nationalism <- function(data, R=9999, new_seed=329172412) {
     abs(ret)
   }
   t0 <- bsfn(hdata, 1:nrow(hdata), theta=actual_betas, enforce=0)
-  b_obj <- boot(hdata, bsfn, R=9999, parallel="multicore", ncpus=30, theta=actual_betas, enforce=1)
+  b_obj <- boot(hdata, bsfn, R=Rb, parallel="multicore", ncpus=30, theta=actual_betas, enforce=1)
   p.val.adj(t0, b_obj$t)
 }
 ```
 
 Now, for calculating the bootstrapped p-values and with the Romano-Wolf adjustment.
 ```{r}
-rw3 <- bs_nationalism(ipsos)
+rw3 <- bs_nationalism(ipsos, Rb = NBOOTSTRAPS)
 rw3 %>% knitr::kable(digits=3)
 ```
 
 
 
+# Interaction effects on Compassion
+
+```{r}
+bs_compassion <- function(data, Rb=999, new_seed=431242412) {
+  set.seed(new_seed)
+  hdata <- data %>% mutate(Xpolitical = republican * corona_prime,
+                           Xincome = highinc * corona_prime,
+                           Xeducation = higheduc * corona_prime,
+                           Xgender = female * corona_prime,
+                           Xretirement = retirement_age * corona_prime,
+                           Xconfirmed = high_confirmed * corona_prime)
+  l1t <- hdata %>% lm(zcompassion ~ corona_prime + Xpolitical + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l2t <- hdata %>% lm(zcompassion ~ corona_prime + Xincome + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l3t <- hdata %>% lm(zcompassion ~ corona_prime + Xeducation + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l4t <- hdata %>% lm(zcompassion ~ corona_prime + Xgender + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l5t <- hdata %>% lm(zcompassion ~ corona_prime + Xretirement + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l6t <- hdata %>% lm(zcompassion ~ corona_prime + Xconfirmed + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  actual_betas <- c(Xpolitical = coef(l1t)[['Xpolitical']], Xincome = coef(l2t)[['Xincome']], 
+                    Xeducation = coef(l3t)[['Xeducation']], Xgender = coef(l4t)[['Xgender']], 
+                    Xretirement = coef(l5t)[['Xretirement']], Xconfirmed = coef(l6t)[['Xconfirmed']])
+  
+  
+  bsfn <- function(data, indices, theta, enforce) {
+    datab <- data[indices,]
+    l1 <- datab %>% lm(zcompassion - enforce*Xpolitical*theta[['Xpolitical']] ~ 
+                         corona_prime + Xpolitical + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l2 <- datab %>% lm(zcompassion - enforce*Xincome*theta[['Xincome']] ~ 
+                         corona_prime + Xincome + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l3 <- datab %>% lm(zcompassion - enforce*Xeducation*theta[['Xeducation']] ~ 
+                         corona_prime + Xeducation + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l4 <- datab %>% lm(zcompassion - enforce*Xgender*theta[['Xgender']] ~ 
+                         corona_prime + Xgender + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l5 <- datab %>% lm(zcompassion - enforce*Xretirement*theta[['Xretirement']] ~ 
+                         corona_prime + Xretirement + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l6 <- datab %>% lm(zcompassion - enforce*Xconfirmed*theta[['Xconfirmed']] ~ 
+                         corona_prime + Xconfirmed + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    ret <- c(
+      Xpolitical = coef(l1)[['Xpolitical']] / sqrt(diag(vcovHC(l1, type = "HC1")))[['Xpolitical']],
+      Xincome =  coef(l2)[['Xincome']] / sqrt(diag(vcovHC(l2, type = "HC1")))[['Xincome']],
+      Xeducation =  coef(l3)[['Xeducation']] / sqrt(diag(vcovHC(l3, type = "HC1")))[['Xeducation']],
+      Xgender =  coef(l4)[['Xgender']] / sqrt(diag(vcovHC(l4, type = "HC1")))[['Xgender']],
+      Xretirement =  coef(l5)[['Xretirement']] / sqrt(diag(vcovHC(l5, type = "HC1")))[['Xretirement']],
+      Xconfirmed =  coef(l6)[['Xconfirmed']] / sqrt(diag(vcovHC(l6, type = "HC1")))[['Xconfirmed']]
+    )
+    abs(ret)
+  }
+  t0 <- bsfn(hdata, 1:nrow(hdata), theta=actual_betas, enforce=0)
+  b_obj <- boot(hdata, bsfn, R=Rb, parallel="multicore", ncpus=30,  theta=actual_betas, enforce=1)
+  p.val.adj(t0, b_obj$t)
+}
+
+```
+
+Now, for calculating the bootstrapped p-values and with the Romano-Wolf adjustment.
+```{r}
+rw2v <- bs_compassion(ipsos, Rb = NBOOTSTRAPS)
+rw2v %>% knitr::kable(digits=3)
+```
+
+
+# Interaction effects on "No borders"
+
+```{r}
+bs_noborders <- function(data, Rb=999, new_seed=431242412) {
+  set.seed(new_seed)
+  hdata <- data %>% mutate(Xpolitical = republican * corona_prime,
+                           Xincome = highinc * corona_prime,
+                           Xeducation = higheduc * corona_prime,
+                           Xgender = female * corona_prime,
+                           Xretirement = retirement_age * corona_prime,
+                           Xconfirmed = high_confirmed * corona_prime)
+  l1t <- hdata %>% lm(znoborders ~ corona_prime + Xpolitical + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l2t <- hdata %>% lm(znoborders ~ corona_prime + Xincome + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l3t <- hdata %>% lm(znoborders ~ corona_prime + Xeducation + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l4t <- hdata %>% lm(znoborders ~ corona_prime + Xgender + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l5t <- hdata %>% lm(znoborders ~ corona_prime + Xretirement + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l6t <- hdata %>% lm(znoborders ~ corona_prime + Xconfirmed + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  actual_betas <- c(Xpolitical = coef(l1t)[['Xpolitical']], Xincome = coef(l2t)[['Xincome']], 
+                    Xeducation = coef(l3t)[['Xeducation']], Xgender = coef(l4t)[['Xgender']], 
+                    Xretirement = coef(l5t)[['Xretirement']], Xconfirmed = coef(l6t)[['Xconfirmed']])
+  
+  
+  bsfn <- function(data, indices, theta, enforce) {
+    datab <- data[indices,]
+    l1 <- datab %>% lm(znoborders - enforce*Xpolitical*theta[['Xpolitical']] ~ 
+                         corona_prime + Xpolitical + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l2 <- datab %>% lm(znoborders - enforce*Xincome*theta[['Xincome']] ~ 
+                         corona_prime + Xincome + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l3 <- datab %>% lm(znoborders - enforce*Xeducation*theta[['Xeducation']] ~ 
+                         corona_prime + Xeducation + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l4 <- datab %>% lm(znoborders - enforce*Xgender*theta[['Xgender']] ~ 
+                         corona_prime + Xgender + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l5 <- datab %>% lm(znoborders - enforce*Xretirement*theta[['Xretirement']] ~ 
+                         corona_prime + Xretirement + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l6 <- datab %>% lm(znoborders - enforce*Xconfirmed*theta[['Xconfirmed']] ~ 
+                         corona_prime + Xconfirmed + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    ret <- c(
+      Xpolitical = coef(l1)[['Xpolitical']] / sqrt(diag(vcovHC(l1, type = "HC1")))[['Xpolitical']],
+      Xincome =  coef(l2)[['Xincome']] / sqrt(diag(vcovHC(l2, type = "HC1")))[['Xincome']],
+      Xeducation =  coef(l3)[['Xeducation']] / sqrt(diag(vcovHC(l3, type = "HC1")))[['Xeducation']],
+      Xgender =  coef(l4)[['Xgender']] / sqrt(diag(vcovHC(l4, type = "HC1")))[['Xgender']],
+      Xretirement =  coef(l5)[['Xretirement']] / sqrt(diag(vcovHC(l5, type = "HC1")))[['Xretirement']],
+      Xconfirmed =  coef(l6)[['Xconfirmed']] / sqrt(diag(vcovHC(l6, type = "HC1")))[['Xconfirmed']]
+    )
+    abs(ret)
+  }
+  t0 <- bsfn(hdata, 1:nrow(hdata), theta=actual_betas, enforce=0)
+  b_obj <- boot(hdata, bsfn, R=Rb, parallel="multicore", ncpus=30,  theta=actual_betas, enforce=1)
+  p.val.adj(t0, b_obj$t)
+}
+
+```
+
+
+Now, for calculating the bootstrapped p-values and with the Romano-Wolf adjustment.
+```{r}
+rw3v <- bs_noborders(ipsos, Rb = NBOOTSTRAPS)
+rw3v %>% knitr::kable(digits=3)
+```
+
+
+# Interaction effects on "Luck belief"
+
+```{r}
+bs_luckbelief <- function(data, Rb=999, new_seed=431242412) {
+  set.seed(new_seed)
+  hdata <- data %>% mutate(Xpolitical = republican * corona_prime,
+                           Xincome = highinc * corona_prime,
+                           Xeducation = higheduc * corona_prime,
+                           Xgender = female * corona_prime,
+                           Xretirement = retirement_age * corona_prime,
+                           Xconfirmed = high_confirmed * corona_prime)
+  l1t <- hdata %>% lm(zluck_belief ~ corona_prime + Xpolitical + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l2t <- hdata %>% lm(zluck_belief ~ corona_prime + Xincome + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l3t <- hdata %>% lm(zluck_belief ~ corona_prime + Xeducation + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l4t <- hdata %>% lm(zluck_belief ~ corona_prime + Xgender + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l5t <- hdata %>% lm(zluck_belief ~ corona_prime + Xretirement + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  l6t <- hdata %>% lm(zluck_belief ~ corona_prime + Xconfirmed + retirement_age + female + highinc + 
+                        republican + higheduc +
+                        child + alone + urban + high_confirmed +
+                        northeast + midwest + south, data=., weights=Weightvar)
+  actual_betas <- c(Xpolitical = coef(l1t)[['Xpolitical']], Xincome = coef(l2t)[['Xincome']], 
+                    Xeducation = coef(l3t)[['Xeducation']], Xgender = coef(l4t)[['Xgender']], 
+                    Xretirement = coef(l5t)[['Xretirement']], Xconfirmed = coef(l6t)[['Xconfirmed']])
+  
+  
+  bsfn <- function(data, indices, theta, enforce) {
+    datab <- data[indices,]
+    l1 <- datab %>% lm(zluck_belief - enforce*Xpolitical*theta[['Xpolitical']] ~ 
+                         corona_prime + Xpolitical + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l2 <- datab %>% lm(zluck_belief - enforce*Xincome*theta[['Xincome']] ~ 
+                         corona_prime + Xincome + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l3 <- datab %>% lm(zluck_belief - enforce*Xeducation*theta[['Xeducation']] ~ 
+                         corona_prime + Xeducation + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l4 <- datab %>% lm(zluck_belief - enforce*Xgender*theta[['Xgender']] ~ 
+                         corona_prime + Xgender + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l5 <- datab %>% lm(zluck_belief - enforce*Xretirement*theta[['Xretirement']] ~ 
+                         corona_prime + Xretirement + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    l6 <- datab %>% lm(zluck_belief - enforce*Xconfirmed*theta[['Xconfirmed']] ~ 
+                         corona_prime + Xconfirmed + retirement_age + female + highinc + 
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
+    ret <- c(
+      Xpolitical = coef(l1)[['Xpolitical']] / sqrt(diag(vcovHC(l1, type = "HC1")))[['Xpolitical']],
+      Xincome =  coef(l2)[['Xincome']] / sqrt(diag(vcovHC(l2, type = "HC1")))[['Xincome']],
+      Xeducation =  coef(l3)[['Xeducation']] / sqrt(diag(vcovHC(l3, type = "HC1")))[['Xeducation']],
+      Xgender =  coef(l4)[['Xgender']] / sqrt(diag(vcovHC(l4, type = "HC1")))[['Xgender']],
+      Xretirement =  coef(l5)[['Xretirement']] / sqrt(diag(vcovHC(l5, type = "HC1")))[['Xretirement']],
+      Xconfirmed =  coef(l6)[['Xconfirmed']] / sqrt(diag(vcovHC(l6, type = "HC1")))[['Xconfirmed']]
+    )
+    abs(ret)
+  }
+  t0 <- bsfn(hdata, 1:nrow(hdata), theta=actual_betas, enforce=0)
+  b_obj <- boot(hdata, bsfn, R=Rb, parallel="multicore", ncpus=30,  theta=actual_betas, enforce=1)
+  p.val.adj(t0, b_obj$t)
+}
+
+```
+
+Now, for calculating the bootstrapped p-values and with the Romano-Wolf adjustment.
+```{r}
+rw1v <- bs_luckbelief(ipsos, Rb = NBOOTSTRAPS)
+rw1v %>% knitr::kable(digits=3)
+```
+
 # Interaction effects on redistribution
 ```{r}
-bs_redistribution_heterogeneity <- function(data, R=9999, new_seed=32432412) {
+bs_redistribution_heterogeneity <- function(data, Rb=999, new_seed=32432412) {
   set.seed(new_seed)
   hdata <- data %>% mutate(Xpolitical = republican * corona_prime,
                            Xincome = highinc * corona_prime,
@@ -407,34 +710,34 @@ bs_redistribution_heterogeneity <- function(data, R=9999, new_seed=32432412) {
     datab <- data[indices,]
     l1 <- datab %>% lm(zredistribution - enforce*Xpolitical*theta[['Xpolitical']] ~ 
                          corona_prime + Xpolitical + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l2 <- datab %>% lm(zredistribution - enforce*Xincome*theta[['Xincome']] ~ 
                          corona_prime + Xincome + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l3 <- datab %>% lm(zredistribution - enforce*Xeducation*theta[['Xeducation']] ~ 
                          corona_prime + Xeducation + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l4 <- datab %>% lm(zredistribution - enforce*Xgender*theta[['Xgender']] ~ 
                          corona_prime + Xgender + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l5 <- datab %>% lm(zredistribution - enforce*Xretirement*theta[['Xretirement']] ~ 
                          corona_prime + Xretirement + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l6 <- datab %>% lm(zredistribution - enforce*Xconfirmed*theta[['Xconfirmed']] ~ 
                          corona_prime + Xconfirmed + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     ret <- c(
       Xpolitical = coef(l1)[['Xpolitical']] / sqrt(diag(vcovHC(l1, type = "HC1")))[['Xpolitical']],
       Xincome =  coef(l2)[['Xincome']] / sqrt(diag(vcovHC(l2, type = "HC1")))[['Xincome']],
@@ -446,15 +749,15 @@ bs_redistribution_heterogeneity <- function(data, R=9999, new_seed=32432412) {
     abs(ret)
   }
   t0 <- bsfn(hdata, 1:nrow(hdata), theta=actual_betas, enforce=0)
-  b_obj <- boot(hdata, bsfn, R=9999, parallel="multicore", ncpus=30, theta=actual_betas, enforce=1)
+  b_obj <- boot(hdata, bsfn, R=Rb, parallel="multicore", ncpus=30, theta=actual_betas, enforce=1)
   p.val.adj(t0, b_obj$t)
 }
 ```
 
 Now, for calculating the bootstrapped p-values and with the Romano-Wolf adjustment.
 ```{r}
-rw4 <- bs_redistribution_heterogeneity(ipsos)
-rw4
+rw4 <- bs_redistribution_heterogeneity(ipsos, Rb = NBOOTSTRAPS)
+rw4 %>% knitr::kable(digits=3)
 ```
 
 
@@ -462,7 +765,7 @@ rw4
 # Interaction effects for health care
 
 ```{r}
-bs_healthcare_heterogeneity <- function(data, R=9999, new_seed=32432412) {
+bs_healthcare_heterogeneity <- function(data, Rb=999, new_seed=32432412) {
   set.seed(new_seed)
   hdata <- data %>% mutate(Xpolitical = republican * corona_prime,
                            Xincome = highinc * corona_prime,
@@ -503,34 +806,34 @@ bs_healthcare_heterogeneity <- function(data, R=9999, new_seed=32432412) {
     datab <- data[indices,]
     l1 <- datab %>% lm(fed_univ_healthcare - enforce*Xpolitical*theta[['Xpolitical']] ~ 
                          corona_prime + Xpolitical + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l2 <- datab %>% lm(fed_univ_healthcare - enforce*Xincome*theta[['Xincome']] ~ 
                          corona_prime + Xincome + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l3 <- datab %>% lm(fed_univ_healthcare - enforce*Xeducation*theta[['Xeducation']] ~ 
                          corona_prime + Xeducation + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l4 <- datab %>% lm(fed_univ_healthcare - enforce*Xgender*theta[['Xgender']] ~ 
                          corona_prime + Xgender + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l5 <- datab %>% lm(fed_univ_healthcare - enforce*Xretirement*theta[['Xretirement']] ~ 
                          corona_prime + Xretirement + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     l6 <- datab %>% lm(fed_univ_healthcare - enforce*Xconfirmed*theta[['Xconfirmed']] ~ 
                          corona_prime + Xconfirmed + retirement_age + female + highinc + 
-                        republican + higheduc +
-                        child + alone + urban + high_confirmed +
-                        northeast + midwest + south, data=., weights=Weightvar)
+                         republican + higheduc +
+                         child + alone + urban + high_confirmed +
+                         northeast + midwest + south, data=., weights=Weightvar)
     ret <- c(
       Xpolitical = coef(l1)[['Xpolitical']] / sqrt(diag(vcovHC(l1, type = "HC1")))[['Xpolitical']],
       Xincome =  coef(l2)[['Xincome']] / sqrt(diag(vcovHC(l2, type = "HC1")))[['Xincome']],
@@ -542,14 +845,14 @@ bs_healthcare_heterogeneity <- function(data, R=9999, new_seed=32432412) {
     abs(ret)
   }
   t0 <- bsfn(hdata, 1:nrow(hdata), theta=actual_betas, enforce=0)
-  b_obj <- boot(hdata, bsfn, R=9999, parallel="multicore", ncpus=30, theta=actual_betas, enforce=1)
+  b_obj <- boot(hdata, bsfn, R=Rb, parallel="multicore", ncpus=30, theta=actual_betas, enforce=1)
   p.val.adj(t0, b_obj$t)
 }
 ```
 
 Now, for calculating the bootstrapped p-values and with the Romano-Wolf adjustment.
 ```{r}
-rw5 <- bs_healthcare_heterogeneity(ipsos)
+rw5 <- bs_healthcare_heterogeneity(ipsos, Rb = NBOOTSTRAPS)
 rw5 %>% knitr::kable(digits=3)
 ```
 
