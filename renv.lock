@@ -835,13 +835,6 @@
       "Repository": "CRAN",
       "Hash": "be5fc9cc13487505381071422d8346e2"
     },
-    "stargazer": {
-      "Package": "stargazer",
-      "Version": "5.2.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "708c566390f55f011bd475b53cc808d7"
-    },
     "stringi": {
       "Package": "stringi",
       "Version": "1.5.3",
