@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  /home/sameos/Documents/gits/mmnyt/mturklab_analysis.log
   log type:  text
- opened on:   7 Jan 2021, 12:11:31
+ opened on:   8 Feb 2021, 15:33:11
 
 .         
 . *Loading data:  
@@ -109,16 +109,12 @@ societyfirst |  -4.321553    4.90237    -0.88   0.378    -13.95401    5.310904
 
 . 
 . esttab col1 col2 col3 col4 using tables/mturklab_indic.tex, ///
->         replace star(* 0.10 ** 0.05 *** 0.01) booktabs r2 se ///
->         keep(societyfirst agree republican highinc higheduc highage female _co
-> ns) ///
->         label mtitle("Solidarity" "Luck unfair" "Amount to self" "Amount to se
-> lf") ///
->         b(3)
-(note: file tables/mturklab_indic.tex not found)
+> replace star(* 0.10 ** 0.05 *** 0.01) booktabs r2 se ///
+> keep(societyfirst agree republican highinc higheduc highage female _cons) ///
+> label mtitle("Solidarity" "Luck unfair" "Amount to self" "Amount to self") ///
+> b(3)
 (output written to tables/mturklab_indic.tex)
 
 . 
 end of do-file
 
-. exit, clear
