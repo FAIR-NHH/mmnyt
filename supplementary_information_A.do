@@ -24,6 +24,7 @@ est clear
 ******************
 gen prior_soc_over_self=10-prior_self_over_soc
 gen prior_global_over_national=10-prior_national_over_global
+gen noborders_disagree=6-noborders_agree
 
 *gen prior_national=.
 *replace prior_national=1 if prior_national_over_global>5 & prior_national_over_global!=.
@@ -70,6 +71,10 @@ sum noborders_agree [weight=Weightvar], detail
 return list
 gen znoborders_agree=(noborders_agree-r(mean))/r(sd)
 
+sum noborders_disagree [weight=Weightvar], detail
+return list
+gen znoborders_disagree=(noborders_disagree-r(mean))/r(sd)
+
 sum gov_reduce_inequality_agree [weight=Weightvar], detail
 return list
 gen zgov_reduce_inequality_agree=(gov_reduce_inequality_agree-r(mean))/r(sd)
@@ -100,6 +105,12 @@ label variable high_confirmedXcorona_prime "High confirmed $\times$"
 *For descriptives table
 gen infected_march28_des=(confirmed/pop2019)*100000
 
+********************
+*Indexes
+********************
+gen luck_unfair_determines_index=zluck_unfair_agree+zluck_determ_agree
+gen solidarity_compassion_index=zcompassion_agree+zprior_soc_over_self
+gen noborders_disnational_index=znoborders_disagree+zprior_national_over_global
 
 *************************************************************************
 *DESCRIPTIVES, Table S1
@@ -347,7 +358,104 @@ label mtitle("Luck unfair (std.)" "Luck unfair (std.)" "Luck unfair (std.)" "Luc
 b(3)
 
 *************************************************************************
-*PRIMING EFFECT, HETEROGENEITY, LUCK BELIEF, Table S7
+*PRIMING EFFECT, HETEROGENEITY, COMPASSION, Table S7a
+*************************************************************************
+reg zcompassion_agree corona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
+est store col1
+
+reg zcompassion_agree corona_prime republicanXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
+lincom corona_prime + republicanXcorona_prime
+estadd scalar Wint1 r(estimate)
+estadd scalar sd1 r(se)
+est store col2
+
+reg zcompassion_agree corona_prime highincXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
+lincom corona_prime + highincXcorona_prime
+estadd scalar Wint1 r(estimate)
+estadd scalar sd1 r(se)
+est store col3
+
+reg zcompassion_agree corona_prime higheducXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
+lincom corona_prime + higheducXcorona_prime
+estadd scalar Wint1 r(estimate)
+estadd scalar sd1 r(se)
+est store col4
+
+reg zcompassion_agree corona_prime femaleXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
+lincom corona_prime + femaleXcorona_prime
+estadd scalar Wint1 r(estimate)
+estadd scalar sd1 r(se)
+est store col5
+
+reg zcompassion_agree corona_prime retirement_ageXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
+lincom corona_prime + retirement_ageXcorona_prime
+estadd scalar Wint1 r(estimate)
+estadd scalar sd1 r(se)
+est store col6
+
+reg zcompassion_agree corona_prime high_confirmedXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
+lincom corona_prime + high_confirmedXcorona_prime
+estadd scalar Wint1 r(estimate)
+estadd scalar sd1 r(se)
+est store col7
+
+esttab col1 col2 col3 col4 col5 col6 col7 using tables/het_zcompassion.tex, ///
+replace star(* 0.10 ** 0.05 *** 0.01) booktabs se stats(Wint1 sd1 N r2, layout(@ (@)) labels("Linear combination" "(Reminder + Interaction)" "Observations" "\(R^{2}\)")) /// ///
+keep(corona_prime republicanXcorona_prime retirement_ageXcorona_prime femaleXcorona_prime higheducXcorona_prime highincXcorona_prime high_confirmedXcorona_prime _cons) ///
+label mtitle("Compassion" "Compassion" "Compassion" "Compassion" "Compassion" "Compassion" "Compassion") ///
+b(3)
+
+
+*************************************************************************
+*PRIMING EFFECT, HETEROGENEITY, NO BORDERS, Table S7b
+*************************************************************************
+reg znoborders_agree corona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
+est store col1
+
+reg znoborders_agree corona_prime republicanXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
+lincom corona_prime + republicanXcorona_prime
+estadd scalar Wint1 r(estimate)
+estadd scalar sd1 r(se)
+est store col2
+
+reg znoborders_agree corona_prime highincXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
+lincom corona_prime + highincXcorona_prime
+estadd scalar Wint1 r(estimate)
+estadd scalar sd1 r(se)
+est store col3
+
+reg znoborders_agree corona_prime higheducXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
+lincom corona_prime + higheducXcorona_prime
+estadd scalar Wint1 r(estimate)
+estadd scalar sd1 r(se)
+est store col4
+
+reg znoborders_agree corona_prime femaleXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
+lincom corona_prime + femaleXcorona_prime
+estadd scalar Wint1 r(estimate)
+estadd scalar sd1 r(se)
+est store col5
+
+reg znoborders_agree corona_prime retirement_ageXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
+lincom corona_prime + retirement_ageXcorona_prime
+estadd scalar Wint1 r(estimate)
+estadd scalar sd1 r(se)
+est store col6
+
+reg znoborders_agree corona_prime high_confirmedXcorona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
+lincom corona_prime + high_confirmedXcorona_prime
+estadd scalar Wint1 r(estimate)
+estadd scalar sd1 r(se)
+est store col7
+
+esttab col1 col2 col3 col4 col5 col6 col7 using tables/het_znoborders.tex, ///
+replace star(* 0.10 ** 0.05 *** 0.01) booktabs se stats(Wint1 sd1 N r2, layout(@ (@)) labels("Linear combination" "(Reminder + Interaction)" "Observations" "\(R^{2}\)")) /// ///
+keep(corona_prime republicanXcorona_prime retirement_ageXcorona_prime femaleXcorona_prime higheducXcorona_prime highincXcorona_prime high_confirmedXcorona_prime _cons) ///
+label mtitle("No borders" "No borders" "No borders" "No borders" "No borders" "No borders" "No borders") ///
+b(3)
+
+*************************************************************************
+*PRIMING EFFECT, HETEROGENEITY, LUCK BELIEF, Table S7c
 *************************************************************************
 reg zluck_determ_agree corona_prime republican highinc higheduc female retirement_age high_confirmed child alone urban northeast midwest south [pw=Weightvar], robust
 est store col1
@@ -685,10 +793,94 @@ label mtitle("Health care (std.)" "Health care (std.)" "Health care (std.)" "Hea
 b(3)
 
 *****************************************
-*Multiple hypothesis testing, Table S18
-********************************************
+*Multiple hypothesis testing, Table S18a
+*****************************************
 *Change of names because of STATA restrictions on variable length
 gen znational=zprior_national_over_global
 gen cp=corona_prime
 
 rwolf zluck_unfair_agree zluck_determ_agree zprior_soc_over_self zcompassion_agree znational znoborders_agree [pw=Weightvar], indepvar(cp) method(regress) controls(retirement_age female highinc republican higheduc child alone urban high_confirmed northeast midwest south) reps(9999)
+
+*****************************************
+*Multiple hypothesis testing, Table S18b
+*****************************************
+*Change of names because of STATA restrictions on variable length
+gen zgov=zgov_reduce_inequality_agree
+gen zfed=zfed_univ_healthcare
+
+rwolf zgov zfed [pw=Weightvar], indepvar(cp) method(regress) controls(retirement_age female highinc republican higheduc child alone urban high_confirmed northeast midwest south) reps(9999)
+
+reg zgov cp retirement_age female highinc republican higheduc child alone urban high_confirmed northeast midwest south [pw=weight], robust
+reg zfed cp retirement_age female highinc republican higheduc child alone urban high_confirmed northeast midwest south [pw=weight], robust
+
+***********************************************************
+*Effect of COVID-19 on Solidarity and Compassion, Table S24
+***********************************************************
+reg prior_soc_over_self corona_prime, robust
+est store col1
+reg prior_soc_over_self corona_prime republican highinc higheduc female age infected_march28 child alone urban northeast midwest south [pw=weight], robust
+est store col2
+
+reg compassion_agree corona_prime, robust
+est store col3
+reg compassion_agree corona_prime republican highinc higheduc female age infected_march28 child alone urban northeast midwest south [pw=weight], robust
+est store col4
+
+reg solidarity_compassion_index corona_prime, robust
+est store col5
+reg solidarity_compassion_index corona_prime republican highinc higheduc female age infected_march28 child alone urban northeast midwest south [pw=weight], robust
+est store col6
+
+esttab col1 col2 col3 col4 col5 col6 using tables/hyp4.tex, ///
+replace star(* 0.10 ** 0.05 *** 0.01) booktabs se stats(N r2, layout(@ @) labels("Observations" "\(R^{2}\)")) /// ///
+keep(corona_prime age female highinc republican higheduc child alone urban infected_march28 northeast midwest south _cons) ///
+label mtitle("Solidarity" "Solidarity" "Compassion" "Compassion" "Index of std" "Index of std") ///
+b(3)
+
+***********************************************************************
+*Effect of COVID-19 reminder on Nationalism and With borders, Table S25
+***********************************************************************
+reg prior_national_over_global corona_prime, robust
+est store col1
+reg prior_national_over_global corona_prime republican highinc higheduc female age infected_march28 child alone urban northeast midwest south [pw=weight], robust
+est store col2
+
+reg noborders_agree corona_prime, robust
+est store col3
+reg noborders_agree corona_prime republican highinc higheduc female age infected_march28 child alone urban northeast midwest south [pw=weight], robust
+est store col4
+
+reg noborders_disnational_index corona_prime, robust
+est store col5
+reg noborders_disnational_index corona_prime republican highinc higheduc female age infected_march28 child alone urban northeast midwest south [pw=weight], robust
+est store col6
+
+esttab col1 col2 col3 col4 col5 col6 using tables/hyp5.tex, ///
+replace star(* 0.10 ** 0.05 *** 0.01) booktabs se stats(N r2, layout(@ @) labels("Observations" "\(R^{2}\)")) /// ///
+keep(corona_prime age female highinc republican higheduc child alone urban infected_march28 northeast midwest south _cons) ///
+label mtitle("Nationalism" "Nationalism" "No borders" "No borders" "Index of std" "Index of std") ///
+b(3)
+
+**********************************************************************
+*Effect of COVID-19 reminder on Luck unfair and Luck belief, Table S26
+**********************************************************************
+reg luck_unfair_agree corona_prime, robust
+est store col1
+reg luck_unfair_agree corona_prime republican highinc higheduc female age infected_march28 child alone urban northeast midwest south [pw=weight], robust
+est store col2
+
+reg luck_determ_agree corona_prime, robust
+est store col3
+reg luck_determ_agree corona_prime republican highinc higheduc female age infected_march28 child alone urban northeast midwest south [pw=weight], robust
+est store col4
+
+reg luck_unfair_determines_index corona_prime, robust
+est store col5
+reg luck_unfair_determines_index corona_prime republican highinc higheduc female age infected_march28 child alone urban northeast midwest south [pw=weight], robust
+est store col6
+
+esttab col1 col2 col3 col4 col5 col6 using tables/hyp1hyp2.tex, ///
+replace star(* 0.10 ** 0.05 *** 0.01) booktabs se stats(N r2, layout(@ @) labels("Observations" "\(R^{2}\)")) /// ///
+keep(corona_prime age female highinc republican higheduc child alone urban infected_march28 northeast midwest south _cons) ///
+label mtitle("Ineq avers" "Ineq avers" "Luck determines" "Luck determines" "Index of std" "Index of std") ///
+b(3)

@@ -1,0 +1,40 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{7}{c}}
+\toprule
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}&\multicolumn{1}{c}{(6)}&\multicolumn{1}{c}{(7)}\\
+                    &\multicolumn{1}{c}{No borders}&\multicolumn{1}{c}{No borders}&\multicolumn{1}{c}{No borders}&\multicolumn{1}{c}{No borders}&\multicolumn{1}{c}{No borders}&\multicolumn{1}{c}{No borders}&\multicolumn{1}{c}{No borders}\\
+\midrule
+Covid-19            &      -0.020         &      -0.040         &      -0.017         &      -0.030         &      -0.031         &      -0.052\sym{*}  &      -0.076\sym{**} \\
+                    &     (0.024)         &     (0.032)         &     (0.030)         &     (0.032)         &     (0.037)         &     (0.027)         &     (0.035)         \\
+\addlinespace
+Republican $\times$ &                     &       0.053         &                     &                     &                     &                     &                     \\
+                    &                     &     (0.049)         &                     &                     &                     &                     &                     \\
+\addlinespace
+High inc. $\times$  &                     &                     &      -0.007         &                     &                     &                     &                     \\
+                    &                     &                     &     (0.048)         &                     &                     &                     &                     \\
+\addlinespace
+High educ. $\times$ &                     &                     &                     &       0.021         &                     &                     &                     \\
+                    &                     &                     &                     &     (0.048)         &                     &                     &                     \\
+\addlinespace
+Female $\times$     &                     &                     &                     &                     &       0.021         &                     &                     \\
+                    &                     &                     &                     &                     &     (0.048)         &                     &                     \\
+\addlinespace
+Retirement age $\times$&                     &                     &                     &                     &                     &       0.185\sym{***}&                     \\
+                    &                     &                     &                     &                     &                     &     (0.056)         &                     \\
+\addlinespace
+High confirmed $\times$&                     &                     &                     &                     &                     &                     &       0.111\sym{**} \\
+                    &                     &                     &                     &                     &                     &                     &     (0.048)         \\
+\addlinespace
+Constant            &       0.356\sym{***}&       0.366\sym{***}&       0.355\sym{***}&       0.361\sym{***}&       0.362\sym{***}&       0.373\sym{***}&       0.383\sym{***}\\
+                    &     (0.044)         &     (0.045)         &     (0.045)         &     (0.045)         &     (0.046)         &     (0.045)         &     (0.045)         \\
+\midrule
+Linear combination  &                     &       0.012         &      -0.023         &      -0.009         &      -0.009         &       0.133         &       0.035         \\
+(Reminder + Interaction)&                     &     (0.037)         &     (0.038)         &     (0.036)         &     (0.031)         &     (0.049)         &     (0.034)         \\
+Observations        &    7239.000         &    7239.000         &    7239.000         &    7239.000         &    7239.000         &    7239.000         &    7239.000         \\
+\(R^{2}\)           &       0.153         &       0.153         &       0.153         &       0.153         &       0.153         &       0.154         &       0.154         \\
+\bottomrule
+\multicolumn{8}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{8}{l}{\footnotesize \sym{*} \(p<0.10\), \sym{**} \(p<0.05\), \sym{***} \(p<0.01\)}\\
+\end{tabular}
+}
