@@ -23,8 +23,8 @@ and an AMD 16-Core X3950). If run on a more modest computer, the
 
 There are 2 `.do` files in the top level directory that outputs
 the regression tables for appendix A based on the main 
-data collection and the secondary datacollection on mTurk for the
-revised version of the paper. Tables from the previous appendix C has
+data collection and the secondary data collection on mTurk for the
+revised version of the paper. Referenced tables from the previous appendix C has
 been incorporated in appendix A.
 
 All graphs are saved in `.pdf` format to the `./graphs` directory and
