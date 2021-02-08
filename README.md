@@ -14,15 +14,17 @@ Ipsos data in `data/processed/ipsos_mmnyt_processed_release.dta`.
 ## Organization of analysis
 There are 3 `.Rmd` files in the top level directory that prepares the
 graphs and the Romano-Wolf adjusted p-values. The
-`mht_interactions.Rmd`, which calculates the Romano-Wolf ajdusted
+`mht_interactions.Rmd`, which calculates the Romano-Wolf adjusted
 p-values using a bootstrap approach assumes that the computer to run on
 has a lot of memory and computing cores (it runs fine with 32GB memory
 and an AMD 16-Core X3950). If run on a more modest computer, the
 "ncpus" should be set accordingly.
 
 There are 2 `.do` files in the top level directory that outputs
-the regression tables for appendix A and C in the supplementary
-information. 
+the regression tables for appendix A based on the main 
+data collection and the secondary datacollection on mTurk for the
+revised version of the paper. Tables from the previous appendix C has
+been incorporated in appendix A.
 
 All graphs are saved in `.pdf` format to the `./graphs` directory and
 the regression tables, in `.tex` format, are saved to the `./tables`
@@ -38,6 +40,6 @@ and `Wolf-ReadMe.txt`), [at his website](https://www.econ.uzh.ch/dam/jcr:41da043
 ## mTurk supplement
 For a revision, we conducted a supplementary data collection on mTurk,
 the data and analysis is kept apart in separate files, the analysis
-is in the Stata dofile `mturklab_analysis.do` outputting `tables/mturklab_indic.tex` 
+is in the Stata do-file `mturklab_analysis.do` outputting `tables/mturklab_indic.tex` 
 based on data in the `data/processed` directory.
 
