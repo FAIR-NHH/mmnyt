@@ -1,5 +1,6 @@
 # Solidarity and Fairness in Times of Crisis
-Repo with data and code for the paper (Cappelen, Falch, Sørensen, and Tungodden).
+Repo with data and code for the paper (Cappelen, Falch, Sørensen, and Tungodden). The paper
+is forthcoming in the Journal of Economic Behavior and Organization.
 
 
 ## Organization of data processing
