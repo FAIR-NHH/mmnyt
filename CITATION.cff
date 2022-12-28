@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this replication package, please cite it as below."
+authors:
+  - family-names: Cappelen
+    given-names: Alexander W.
+    orcid: https://orcid.org/0000-0002-3489-7085
+  - family-names: Falch
+    given-names: Ranveig
+    orcid: https://orcid.org/0000-0002-2325-9766    
+  - family-names: Sørensen
+    given-names: Erik Ø.
+    orcid: https://orcid.org/0000-0002-7155-4188
+  - family-names: Tungodden
+    given-names: Bertil
+    orcid: https://orcid.org/0000-0002-4182-8491
+title: "Replication package for: Solidarity and Fairness in Times of Crisis"
+version: 2.0.4
+doi: 10.5281/zenodo.7488964
+date-released: 2022-12-28
