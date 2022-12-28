@@ -1,6 +1,10 @@
 # Solidarity and Fairness in Times of Crisis
 Repo with data and code for the paper (Cappelen, Falch, Sørensen, and Tungodden). The paper
-is forthcoming in the Journal of Economic Behavior and Organization.
+is published (open access) as:
+
+> Alexander W. Cappelen, Ranveig Falch, Erik Ø. Sørensen and Bertil Tungodden (2021). 
+  Solidarity and fairness in times of crisis. Journal of Economic Behavior & Organization 186: 1-11.
+  https://doi.org/10.1016/j.jebo.2021.03.017
 
 
 ## Organization of data processing
